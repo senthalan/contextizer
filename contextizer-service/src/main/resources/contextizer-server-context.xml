@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd ">
+
+    <context:annotation-config/>
+
+    <context:component-scan base-package="com.senthalan.contextizer"/>
+
+    <context:property-placeholder location="classpath:contextizer-server.properties"/>
+
+    <bean id="newsApi" class="com.senthalan.contextizer.api.NewsApi"/>
+
+    <bean id="userApi" class="com.senthalan.contextizer.api.UserApi"/>
+
+    <bean id="mediaApi" class="com.senthalan.contextizer.api.MediaApi"/>
+
+    <bean id="jsonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
+
+    <bean id="corsFilter" class="org.apache.cxf.rs.security.cors.CrossOriginResourceSharingFilter"/>
+
+
+    <import resource="contextizer-server-rest-context.xml"/>
+
+    <import resource="contextizer-data-config.xml"/>
+
+</beans>

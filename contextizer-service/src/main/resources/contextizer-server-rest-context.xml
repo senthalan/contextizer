@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+       xmlns:httpj="http://cxf.apache.org/transports/http-jetty/configuration"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://cxf.apache.org/jaxrs
+       http://cxf.apache.org/schemas/jaxrs.xsd
+       http://cxf.apache.org/transports/http-jetty/configuration
+       http://cxf.apache.org/schemas/configuration/http-jetty.xsd">
+
+    <import resource="classpath:META-INF/cxf/cxf.xml"/>
+
+    <httpj:engine-factory id="contextizer-server-jetty-config">
+        <httpj:engine port="${service.base.port}">
+            <httpj:threadingParameters maxThreads="100"
+                                       minThreads="20"/>
+        </httpj:engine>
+    </httpj:engine-factory>
+
+    <jaxrs:server id="contextizerServer" address="${service.base.url}"
+                  depends-on="contextizer-server-jetty-config">
+        <jaxrs:serviceBeans>
+            <ref bean="newsApi"/>
+            <ref bean="userApi"/>
+            <ref bean="mediaApi"/>
+        </jaxrs:serviceBeans>
+        <jaxrs:providers>
+            <ref bean="jsonProvider"/>
+            <ref bean="corsFilter"/>
+        </jaxrs:providers>
+    </jaxrs:server>
+</beans>
