@@ -2,9 +2,7 @@ import React, {Component} from 'react'
 import AltContainer from 'alt-container';
 
 import UserStore from './../stores/UserStore'
-import UserActions from './../actions/UserActions'
-import UserSettingAction from './../actions/UserSettingsActions'
-import UserSettingStore from './../stores/UserSettingsStore'
+import UserAction from './../actions/UserActions'
 
 import { browserHistory } from 'react-router';
 
@@ -32,7 +30,7 @@ class UserLogin extends Component {
             email: this.refs.userEmail.getValue(),
             password: this.refs.password.getValue()
         };
-        UserActions.login(user);
+        UserAction.login(user);
     }
 
     registerOpen() {
@@ -46,27 +44,27 @@ class UserLogin extends Component {
 
     registerUser() {
         if (!this.refs.email.getValue()) {
-            this.state.error.name = 'Please enter email';
+            this.state.error.name = 'Please enter name';
             this.state.registerOkay = false;
         } else {
             this.state.error.name = '';
             this.state.registerOkay = true;
         }
-        if (!this.refs.password.getValue() && this.state.registerOkay) {
+        if (!this.refs.password.getValue() ) {
             this.state.error.password = 'Please enter password';
             this.state.registerOkay = false;
         } else {
             this.state.error.password = '';
             this.state.registerOkay = true;
         }
-        if (!this.refs.passConform.getValue() && this.state.registerOkay) {
+        if (!this.refs.passConform.getValue()) {
             this.state.error.passConform = 'Please re-enter password';
             this.state.registerOkay = false;
         } else {
             this.state.error.passConform = '';
             this.state.registerOkay = true;
         }
-        if (!(this.refs.passConform.getValue()==this.refs.password.getValue()) && (!this.refs.passConform.getValue()) && (!this.refs.passConform.getValue()) && this.state.registerOkay) {
+        if (!(this.refs.passConform.getValue()==this.refs.password.getValue())) {
             this.state.error.password = 'Password not matched';
             this.state.error.passwConform = 'Password not matched';
             this.state.registerOkay = false;
@@ -81,10 +79,8 @@ class UserLogin extends Component {
         };
         this.forceUpdate();
         if (this.state.registerOkay){
-            //UserSettingAction.updateBasic(user);
-            //this.state.error.name = res.status;
-            //this.forceUpdate();
-            //this.registerClose();
+            UserAction.submitRegister(user);
+            this.forceUpdate();
         }
     }
 
@@ -95,13 +91,6 @@ class UserLogin extends Component {
                 <div className="row">
                     <div className="col-md-4 col-md-offset-4 margin-top-80 text-center">
                         <h2>contextizer User</h2>
-                        {this.props.userState.isFailed() &&
-                        (
-                            <div className="alert alert-danger">
-                                {this.props.userState.message}
-                            </div>
-                        )
-                        }
 
                         {this.props.userState.isLoading() &&
                         (
@@ -120,6 +109,7 @@ class UserLogin extends Component {
                             <div>
                                 <TextField
                                     ref="userEmail"
+                                    type="email"
                                     floatingLabelText="User email"/>
                                 <br/>
 
@@ -128,6 +118,15 @@ class UserLogin extends Component {
                                     floatingLabelText="Password"
                                     type="password"/>
                                 <br/>
+
+                                {this.props.userState.isFailed() &&
+                                (
+                                    <div className="alert alert-danger">
+                                        {this.props.userState.message}
+                                    </div>
+                                )
+                                }
+
                                     <div className="margin-top-40">
                                     <RaisedButton label="Login"
                                                   primary={true}
@@ -153,42 +152,60 @@ class UserLogin extends Component {
                     onRequestClose={this.registerClose.bind(this)}
                 >
                     <div className="row">
-                        <div className="col-md-12 text-center">
-                            <TextField
-                                floatingLabelText="User email"
-                                ref="email"
-                                type="email"
-                                errorText={this.state.error.name}
-                            /><br/>
-                            <TextField
-                                type="password"
-                                hintText="password"
-                                ref='password'
-                                errorText={this.state.error.password}
-                            /><br/>
-                            <TextField
-                                type="password"
-                                hintText="Conform New password"
-                                ref='passConform'
-                                errorText={this.state.error.passConform}
-                            />
-                        </div>
-
-                        <div className="col-md-12 text-center">
-                                <div>
-                                    <FlatButton
-                                        label="Later"
-                                        secondary={true}
-                                        onTouchTap={this.registerClose.bind(this)}
-                                    />
-                                    <FlatButton
-                                        label="Register User"
-                                        primary={true}
-                                        keyboardFocused={true}
-                                        onTouchTap={this.registerUser.bind(this)}
-                                    />
+                        {this.props.userRegisterState.isLoading() &&
+                        (
+                            <span>
+                                <div className="la-ball-scale-multiple la-3x la-top-40">
                                 </div>
-                        </div>
+                                {this.props.userRegisterState.message}
+                            </span>
+                        )
+                        }
+                        {!this.props.userRegisterState.isLoading() &&
+                        (
+                            <div className="col-md-12 text-center">
+                                <TextField
+                                    floatingLabelText="User email"
+                                    ref="email"
+                                    type="email"
+                                    errorText={this.state.error.name}
+                                /><br/>
+                                <TextField
+                                    type="password"
+                                    hintText="password"
+                                    ref='password'
+                                    errorText={this.state.error.password}
+                                /><br/>
+                                <TextField
+                                    type="password"
+                                    hintText="Conform New password"
+                                    ref='passConform'
+                                    errorText={this.state.error.passConform}
+                                />
+
+
+                                {this.props.userRegisterState.isFailed() &&
+                                (
+                                    <div className="alert alert-danger">
+                                        {this.props.userRegisterState.message}
+                                    </div>
+                                )
+                                }
+                                    <div>
+                                        <FlatButton
+                                            label="Later"
+                                            secondary={true}
+                                            onTouchTap={this.registerClose.bind(this)}
+                                        />
+                                        <FlatButton
+                                            label="Register User"
+                                            primary={true}
+                                            keyboardFocused={true}
+                                            onTouchTap={this.registerUser.bind(this)}
+                                        />
+                                    </div>
+                            </div>
+                            )}
                     </div>
                 </Dialog>
             </div>

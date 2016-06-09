@@ -3,9 +3,14 @@ package com.senthalan.contextizer.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.senthalan.contextizer.util.ISODateTimeSerializer;
+import org.joda.time.DateTime;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -15,21 +20,28 @@ public class NewsWithTag {
 
     @Id
     public String id;
-    public String mediaId;
+    public String media;
     public String text;
     public String description;
     public String link;
 
-    public Set<String> tags;
+    public String tags;
+
+    public List<String> keywords;
+
+    public int webReach;
+
+    public Set<String> views=new HashSet<>();
+
+    @CreatedDate
+    @JsonSerialize(using = ISODateTimeSerializer.class)
+    public DateTime createdTime;
+
+    public boolean seen;
 
 
-
-    public NewsWithTag(){
-
-    }
-
-    public NewsWithTag(String mediaId, String mediaName, String text, String description, String link, Set<String> tags) {
-        this.mediaId = mediaId;
+    public NewsWithTag( String media, String text, String description, String link, String tags) {
+        this.media = media;
         this.text = text;
         this.description = description;
         this.link = link;
@@ -40,11 +52,19 @@ public class NewsWithTag {
     public String toString() {
         return "News{" +
                 "id='" + id + '\'' +
-                ", mediaId='" + mediaId + '\'' +
+                ", mediaId='" + media + '\'' +
                 ", text='" + text + '\'' +
                 ", description='" + description + '\'' +
                 ", link='" + link + '\'' +
                 ", tags=" + tags +
+                ", keywords=" + keywords +
                 '}';
+    }
+
+    public NewsWithTag calculateSeen(String userId){
+        this.seen = views.contains(userId);
+        webReach=views.size();
+        views=null;
+        return this;
     }
 }

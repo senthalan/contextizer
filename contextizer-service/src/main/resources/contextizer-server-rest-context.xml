@@ -30,6 +30,8 @@
         <jaxrs:providers>
             <ref bean="jsonProvider"/>
             <ref bean="corsFilter"/>
+            <ref bean="authFilter"/>
+            <ref bean="exceptionHandler"/>
         </jaxrs:providers>
     </jaxrs:server>
 </beans>

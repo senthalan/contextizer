@@ -39,6 +39,28 @@ class UserActions {
     }
 
 
+    submitSubscribe(SubscriptionReq) {
+        UserSource.submitSubscribe(SubscriptionReq)
+            .then(this.refreshSuccess)
+            .catch(this.refreshFailed);
+        return 1;
+    }
+
+    submitRegister(user) {
+        UserSource.submitRegister(user)
+            .then(this.submitRegisterSuccess)
+            .catch(this.submitRegisterFailed);
+        return 1;
+    }
+
+    submitRegisterSuccess(loginResp) {
+        return loginResp;
+    }
+
+    submitRegisterFailed(errorMessage) {
+        return errorMessage;
+    }
+
 }
 
 export  default alt.createActions(UserActions);

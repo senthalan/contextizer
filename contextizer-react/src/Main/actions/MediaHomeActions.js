@@ -7,8 +7,8 @@ class MediaHomeActions {
         this.generateActions('resetHome');
     }
 
-    getAllNewses(mediaName) {
-        MediaHomeSource.getAllNewses(mediaName)
+    getAllNewses(req) {
+        MediaHomeSource.getAllNewses(req)
             .then(this.updateAllNewses)
             .catch(this.getAllNewsesFailed);
         return 1;

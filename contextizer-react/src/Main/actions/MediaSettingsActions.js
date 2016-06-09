@@ -1,25 +1,21 @@
 import alt from './../../alt'
-import UserSource from './../sources/UserSource'
-import UserStore from './../stores/UserStore'
-import UserActions from './../actions/UserActions'
+import MediaSettingsSource from './../sources/MediaSettingsSource.js'
 
-class UserSettingsActions {
+class MediaSettingsActions {
 
 
     constructor(){
         this.generateActions('resetSettings');
     }
 
-    updateBasic(user) {
-        UserSource.updateBasic(user)
+    updateBasic(media) {
+        MediaSettingsSource.updateBasic(media)
             .then(this.updateBasicSuccess)
             .catch(this.updateBasicFailed);
-
         return 1;
     }
 
     updateBasicSuccess(resp) {
-        UserActions.loginSuccess(resp);
         return resp;
     }
 
@@ -28,7 +24,7 @@ class UserSettingsActions {
     }
 
     changePassword(req) {
-        UserSource.changePassword(req)
+        MediaSettingsSource.changePassword(req)
             .then(this.changePasswordSuccess)
             .catch(this.changePasswordFailed);
         return 1;
@@ -42,6 +38,22 @@ class UserSettingsActions {
         return errorMessage;
     }
 
+    rssUpdate(req) {
+        MediaSettingsSource.rssUpdate(req)
+            .then(this.rssUpdateSuccess)
+            .catch(this.rssUpdateFailed);
+        return 1;
+    }
+
+    rssUpdateSuccess(resp) {
+        return resp;
+    }
+
+    rssUpdateFailed(errorMessage) {
+        return errorMessage;
+    }
+
+
 }
 
-export  default alt.createActions(UserSettingsActions);
+export  default alt.createActions(MediaSettingsActions);

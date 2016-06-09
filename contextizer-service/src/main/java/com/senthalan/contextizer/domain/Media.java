@@ -3,6 +3,7 @@ package com.senthalan.contextizer.domain;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
@@ -19,9 +20,9 @@ public class Media {
     public String id;
     public String name;
     public String password;
-
     public String contactPersonName;
     public String contactPersonPhone;
+    @Indexed(unique = true, sparse = true, name = "contactPersonEmail")
     public String contactPersonEmail;
     public String webUrl;
     public String facebookUrl;

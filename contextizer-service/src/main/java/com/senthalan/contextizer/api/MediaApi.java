@@ -4,6 +4,7 @@ package com.senthalan.contextizer.api;
 import com.senthalan.contextizer.domain.Media;
 import com.senthalan.contextizer.domain.User;
 import com.senthalan.contextizer.message.MNResponse;
+import com.senthalan.contextizer.message.PasswordChangeReq;
 import com.senthalan.contextizer.message.SignInMediaResp;
 import com.senthalan.contextizer.service.MediaService;
 import com.senthalan.contextizer.util.Authorize;
@@ -37,8 +38,9 @@ public class MediaApi {
 
     @POST
     @Path("/getall")
+    @Authorize
     public MNResponse<List<Media>> getAllMedia(User user) throws MNException {
-        LOGGER.debug("get all media with params: {}", user);
+        LOGGER.debug("get all media with user params: {}", user);
         return new MNResponse<>(mediaService.getAllMedia(user));
     }
 
@@ -55,6 +57,27 @@ public class MediaApi {
     @Authorize
     public MNResponse<SignInMediaResp> refresh(Media media) throws MNException {
         return new MNResponse<>(mediaService.refresh(media));
+    }
+
+    @PUT
+    @Path("/password")
+    @Authorize
+    public MNResponse<String> updatePassword(PasswordChangeReq req) throws MNException {
+        return new MNResponse<String>(mediaService.updatePassword(req));
+    }
+
+    @PUT
+    @Path("/basicConfig")
+    @Authorize
+    public MNResponse<Media> updateBasicConfig(Media media) throws MNException {
+        return new MNResponse<Media>(mediaService.updateBasicConfig(media));
+    }
+
+    @PUT
+    @Path("/rssConfig")
+    @Authorize
+    public MNResponse<Media> updateRssConfig(Media media) throws MNException {
+        return new MNResponse<Media>(mediaService.updateRssConfig(media));
     }
 
 }

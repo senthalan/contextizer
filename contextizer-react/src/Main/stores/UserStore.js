@@ -6,11 +6,15 @@ import NetworkState from './../../NetworkState.js'
 class UserStore {
 
     constructor() {
-        console.log('Initializing MediaUserStore');
+        console.log('Initializing UserStore');
 
         this.user = {};
         this.isLoggedIn = false;
+
+
         this.userState = NetworkState.init();
+        this.userRegisterState = NetworkState.init();
+
 
         if(localStorage.getItem("Authorization")){
             var user = JSON.parse(localStorage.getItem('user'));
@@ -25,7 +29,11 @@ class UserStore {
             logout: UserActions.LOGOUT,
             refresh:UserActions.REFRESH,
             refreshSuccess:UserActions.REFRESH_SUCCESS,
-            refreshFailed:UserActions.REFRESH_FAILED
+            refreshFailed:UserActions.REFRESH_FAILED,
+            submitSubscribe:UserActions.SUBMIT_SUBSCRIBE,
+            submitRegister:UserActions.SUBMIT_REGISTER,
+            submitRegisterSuccess:UserActions.SUBMIT_REGISTER_SUCCESS,
+            submitRegisterFailed:UserActions.SUBMIT_REGISTER_FAILED
         });
     }
 
@@ -83,10 +91,40 @@ class UserStore {
         this.isLoggedIn = false;
     }
 
+    submitSubscribe(SubscriptionReq) {
+        this.isLoggedIn = false;
+        this.userState.load('Signing in ...');
+        console.log('refreshing user with Subscribe');
+    }
+
+    submitRegister(user) {
+        console.log('refreshing user with Subscribe');
+        this.isLoggedIn = false;
+        this.userRegisterState.load('Signing up ...');
+    }
+
+
+    submitRegisterSuccess(loginResp) {
+        console.log('refresh user sucess');
+        this.user = loginResp.user;
+        localStorage.setItem("Authorization", loginResp.accessToken);
+        localStorage.setItem("user", JSON.stringify(this.user));
+        this.isLoggedIn = true;
+        this.userState.succeed('Welcome ' + this.user.email);
+        this.userRegisterState.succeed('Welcome ' + this.user.email);
+        setTimeout(UserActions.resetUser, 3000)
+    }
+
+    submitRegisterFailed(errorMessage) {
+        this.user = {};
+        this.isLoggedIn = false;
+        this.userRegisterState.fail(errorMessage);
+    }
 
     resetUser() {
         console.log('refresh user sucess user reset');
         this.userState.reset();
+        this.userRegisterState.reset();
     }
 
 }

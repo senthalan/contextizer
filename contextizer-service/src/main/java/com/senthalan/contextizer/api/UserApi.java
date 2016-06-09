@@ -48,7 +48,7 @@ public class UserApi {
     @POST
     @Path("/subscribe")
     @Authorize
-    public MNResponse<User> subscribe(SubscriptionReq subscription) throws MNException {
+    public MNResponse<SignInUserResp> subscribe(SubscriptionReq subscription) throws MNException {
         return new MNResponse<>(userService.subscribe(subscription));
     }
 }

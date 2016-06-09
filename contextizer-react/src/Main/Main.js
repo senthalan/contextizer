@@ -43,6 +43,7 @@ class Main extends Component {
                     (
                         <UserLogin
                             userState={this.state.userState}
+                            userRegisterState={this.state.userRegisterState}
                         />
                     )
                 }

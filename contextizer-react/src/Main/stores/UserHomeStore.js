@@ -9,11 +9,14 @@ class UserHomeStore {
         console.log('Initializing UserHomeStore');
 
         this.newses = [];
+        this.newses.content=[];
         this.medias = [];
+        this.relatedNewsRes={"newsId":1};
+        this.tags = ['local', 'world', 'technology'];
 
-        this.nameState = NetworkState.init();
         this.newsState = NetworkState.init();
         this.mediaState = NetworkState.init();
+        this.relatedNewsState=NetworkState.init();
 
         this.bindListeners({
             resetHome: UserHomeActions.RESET_HOME,
@@ -21,12 +24,16 @@ class UserHomeStore {
             getAllNewsesSuccess: UserHomeActions.GET_ALL_NEWSES_SUCCESS,
             getAllNewsesFailed: UserHomeActions.GET_ALL_NEWSES_FAILED,
             getAllMedia: UserHomeActions.GET_ALL_MEDIA,
-            getAllMediaSuccess: UserHomeActions.GET_ALL_MEDIA_SUCCESS
+            getAllMediaSuccess: UserHomeActions.GET_ALL_MEDIA_SUCCESS,
+            clickMe: UserHomeActions.CLICK_ME,
+            getRelatedNews:UserHomeActions.GET_RELATED_NEWS
         });
     }
 
     resetHome() {
-        this.nameState.reset();
+        this.newsState.reset();
+        this.mediaState.reset();
+        this.relatedNewsState.reset();
     }
 
     getAllNewses() {
@@ -40,10 +47,11 @@ class UserHomeStore {
     }
 
     getAllNewsesFailed(errorMessage) {
+        this.newses.content=[];
         this.newsState.fail(errorMessage);
     }
 
-    getAllMedia() {
+    getAllMedia(user) {
         this.mediaState.load('Loading newses ...');
     }
 
@@ -51,6 +59,16 @@ class UserHomeStore {
         console.log('medias got from');
         this.mediaState.succeed();
         this.medias = medias;
+    }
+
+    clickMe(newsId) {
+
+    }
+
+    getRelatedNews(relatedNews){
+        this.relatedNewsState.succeed();
+        this.relatedNewsRes=relatedNews;
+        console.log("related news got from database");
     }
 }
 

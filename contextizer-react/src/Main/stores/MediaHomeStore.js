@@ -10,6 +10,7 @@ class MediaHomeStore {
         console.log('Initializing MediaHomeStore');
 
         this.newses = [];
+        this.newses.content=[];
 
         this.newsState = NetworkState.init();
         this.publishState = NetworkState.init();
@@ -40,6 +41,7 @@ class MediaHomeStore {
         setTimeout(MediaHomeActions.resetHome, 3000);
     }
     getAllNewsesFailed(errorMessage){
+        this.newses.content=[];
         this.newsState.fail(errorMessage);
     }
 

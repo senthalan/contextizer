@@ -13,4 +13,7 @@ public interface MediaRepository extends MongoRepository<Media, String> {
     @Query(value = "{ publishers: ?0, }")
     List<Media> findMediaByPublisher(String publisher);
 
+    Media findByName(String name);
+
+    Media findOneByContactPersonEmail(String contactPersonEmail);
 }

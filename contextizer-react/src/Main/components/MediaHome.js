@@ -5,7 +5,12 @@ import {Card, CardHeader, CardTitle, CardText,CardActions,
     FloatingActionButton, Avatar, FontIcon,
     TextField, Checkbox, RaisedButton,
     Dialog, FlatButton, Snackbar} from 'material-ui';
+
 import ContentAdd from '../../../node_modules/material-ui/lib/svg-icons/content/add';
+import NewsFirst from '../../../node_modules/material-ui/lib/svg-icons/av/fast-rewind';
+import NewsLast from '../../../node_modules/material-ui/lib/svg-icons/av/fast-forward'
+import NewsNext from '../../../node_modules/material-ui/lib/svg-icons/av/skip-next';
+import NewsBack from '../../../node_modules/material-ui/lib/svg-icons/av/skip-previous';
 
 import MediaHomeActions from './../actions/MediaHomeActions';
 import MediaUserActions from './../actions/MediaUserActions';
@@ -18,9 +23,10 @@ class MediaHome extends Component {
 
     constructor(props) {
         super(props);
+        this.skip = 0;
         this.state = {
-            logoutOpen: false,
             publishOpen: false,
+            settingOpen: false,
             tags: [],
             error: {
                 text: '',
@@ -30,13 +36,14 @@ class MediaHome extends Component {
         };
     }
 
-    logoutOpen() {
-        this.setState({logoutOpen: true});
+
+    settingOpen() {
+        this.setState({settingOpen: true});
     }
 
 
-    logoutClose() {
-        this.setState({logoutOpen: false});
+    settingClose() {
+        this.setState({settingOpen: false});
     }
 
 
@@ -51,12 +58,13 @@ class MediaHome extends Component {
 
 
     componentDidMount() {
-        setTimeout(MediaHomeActions.getAllNewses.bind(this, this.props.media.name), 0);
+        var req = {mediaId: this.props.media.name};
+        setTimeout(MediaHomeActions.getAllNewses.bind(this, req), 0);
         clearInterval(this.pollInterval);
-        this.pollInterval = setInterval(MediaHomeActions.getAllNewses.bind(this, this.props.media.name), 15000);
+        this.pollInterval = setInterval(MediaHomeActions.getAllNewses.bind(this, {mediaId: this.props.media.name}), 15000);
     }
 
-    componentWillUnmount(){
+    componentWillUnmount() {
         clearInterval(this.pollInterval);
     }
 
@@ -71,7 +79,7 @@ class MediaHome extends Component {
 
     publishNews() {
         var news = {
-            mediaId: this.props.media.id,
+            media: this.props.media.name,
             text: this.refs.text.getValue(),
             description: this.refs.description.getValue(),
             link: this.refs.link.getValue(),
@@ -100,27 +108,57 @@ class MediaHome extends Component {
         }
     }
 
-    descriptionRemoveHref(description){
-        var start = description.indexOf('<a ');
-        var end = description.indexOf('/a>');
-        if(start > -1 && end  > -1){
-            description = description.substring(0, start)
+    newsBackward() {
+        if (this.skip > 0) {
+            this.skip = this.skip - 1;
+            var req = {
+                "userId": this.props.user.id,
+                "mediaId": this.state.selectedMedia,
+                "tag": this.state.selectedTag,
+                "skip": this.skip
+            };
+            UserHomeActions.getAllNewses(req);
         }
-        return description;
+    }
+
+    newsForward() {
+        if (this.skip < this.props.newses.totalPages - 1) {
+            this.skip = this.skip + 1;
+            var req = {
+                "mediaId": this.props.media.name,
+                "skip": this.skip
+            };
+            MediaHomeActions.getAllNewses(req);
+        }
+    }
+
+    newsFirst() {
+        if (this.skip > 0) {
+            this.skip = 0;
+            var req = {
+                "mediaId": this.props.media.name,
+                "skip": this.skip
+            };
+            MediaHomeActions.getAllNewses(req);
+        }
+    }
+
+    newsLast() {
+        if (this.skip < this.props.newses.totalPages - 1) {
+            this.skip = this.props.newses.totalPages - 1;
+            var req = {
+                "mediaId": this.props.media.name,
+                "skip": this.skip
+            };
+            MediaHomeActions.getAllNewses(req);
+        }
     }
 
     render() {
         return (
             <div>
-                <div className="logout-btn">
-                    <FloatingActionButton
-                        secondary={true}
-                        iconClassName={"fa fa-power-off"}
-                        tooltip="Log out"
-                        tooltipPosition="top-right"
-                        onTouchTap={this.logoutOpen.bind(this)}>
-                    </FloatingActionButton>
-                </div>
+
+
                 <div className="container">
                     <div className="row">
                         <div className="col-md-1 pull-right">
@@ -131,28 +169,6 @@ class MediaHome extends Component {
                                 </FloatingActionButton>
                             </div>
                         </div>
-
-                        <Dialog
-                            title="Confirm Logout"
-                            actions={[
-                              <FlatButton
-                                label="Later"
-                                secondary={true}
-                                onTouchTap={this.logoutClose.bind(this)}
-                              />,
-                              <FlatButton
-                                label="Logout"
-                                primary={true}
-                                keyboardFocused={true}
-                                onTouchTap={MediaUserActions.logout}
-                              />
-                            ]}
-                            modal={false}
-                            open={this.state.logoutOpen}
-                            onRequestClose={this.logoutClose.bind(this)}
-                            >
-                            Are you sure want to logout from MyNews?
-                        </Dialog>
 
 
                         <Dialog
@@ -170,10 +186,10 @@ class MediaHome extends Component {
                                 onTouchTap={this.publishNews.bind(this)}
                               />
                             ]}
-                            modal={false}
+                            modal={true}
                             open={this.state.publishOpen}
                             onRequestClose={this.publishClose.bind(this)}
-                            >
+                        >
                             <div className="row">
                                 <div className="col-md-12">
                                     <TextField
@@ -181,7 +197,7 @@ class MediaHome extends Component {
                                         ref="text"
                                         floatingLabelText="News short text"
                                         errorText={this.state.error.text}
-                                        /><br/>
+                                    /><br/>
                                     <TextField
                                         fullWidth={true}
                                         floatingLabelText="Description"
@@ -190,39 +206,14 @@ class MediaHome extends Component {
                                         rows={2}
                                         rowsMax={4}
                                         errorText={this.state.error.description}
-                                        /><br/>
+                                    /><br/>
                                     <TextField
                                         fullWidth={true}
                                         ref="link"
                                         floatingLabelText="Link to news website"
                                         errorText={this.state.error.link}
-                                        /><br/>
-                                    <h5>Select Tags</h5>
+                                    /><br/>
 
-                                    <div className="col-md-4">
-                                        <Checkbox
-                                            label="Sports"
-                                            onCheck={this.addTag.bind(this, "Sports")}
-                                            />
-                                    </div>
-                                    <div className="col-md-4">
-                                        <Checkbox
-                                            label="Cinema"
-                                            onCheck={this.addTag.bind(this, "Cinema")}
-                                            />
-                                    </div>
-                                    <div className="col-md-4">
-                                        <Checkbox
-                                            label="Tradition and Culture"
-                                            onCheck={this.addTag.bind(this, "Tradition and Culture")}
-                                            />
-                                    </div>
-                                    <div className="col-md-4">
-                                        <Checkbox
-                                            label="Politics"
-                                            onCheck={this.addTag.bind(this, "Politics")}
-                                            />
-                                    </div>
 
                                 </div>
                             </div>
@@ -260,7 +251,7 @@ class MediaHome extends Component {
                             </div>
                         )
                         }
-                        {this.props.newses.map((news) => {
+                        {this.props.newses.content.map((news) => {
                                 return (
                                     <Card className="col-md-8 col-md-offset-2 margin-top-20">
                                         <div className="col-md-12 margin-top-10">
@@ -269,30 +260,18 @@ class MediaHome extends Component {
                                             </h4>
                                         </div>
                                         <div className="col-md-12 margin-top-10">
-                                            {this.descriptionRemoveHref(news.description)}
+                                            {news.description}
                                             <div className="margin-top-10 ">
-                                                {news.tags.map((tag) => {
-                                                    return (
+
                                                         <span>
-                                                        <span className="label label-default">{tag}</span>&nbsp;&nbsp;
+                                                        <span
+                                                            className="label label-default"> {news.tags}</span>&nbsp;&nbsp;
                                                     </span>
-                                                    )
-                                                })
-                                                }
                                             </div>
                                         </div>
                                         <div className="col-md-12 margin-top-10 ">
                                             <i className="fa fa-globe"/>
                                             <a href={news.link} target="new">{news.link}</a>
-                                        </div>
-                                        <div className="col-md-12">
-                                            <hr/>
-                                        </div>
-                                        <div className="col-md-6 margin-10">
-                                            {moment(news.createdTime).format('MMM Do, h:mm A')}
-                                        </div>
-                                        <div className="col-md-6 margin-10 text-right">
-                                            <strong>{news.webReach}</strong>&nbsp;Clicks
                                         </div>
                                     </Card>
                                 )
@@ -300,11 +279,27 @@ class MediaHome extends Component {
                         )
                         }
                     </div>
+
+                    {!this.props.newsState.isFailed() &&
+                    (
+                        <div className="col-md-8 col-md-offset-2 page-number">
+
+                            <NewsFirst onTouchTap={this.newsFirst.bind(this)}></NewsFirst>
+                            <NewsBack onTouchTap={this.newsBackward.bind(this)}></NewsBack>
+                            &nbsp;<label> {this.props.newses.number + 1}
+                            of {this.props.newses.totalPages} </label>&nbsp;
+                            <NewsNext onTouchTap={this.newsForward.bind(this)}></NewsNext>
+                            <NewsLast onTouchTap={this.newsLast.bind(this)}></NewsLast>
+                        </div>
+                    )
+                    }
+
+
                     <Snackbar
                         open={this.props.publishState.isSuccess()}
                         message={this.props.publishState.message}
                         autoHideDuration={3000}
-                        />
+                    />
                 </div>
             </div>
         )

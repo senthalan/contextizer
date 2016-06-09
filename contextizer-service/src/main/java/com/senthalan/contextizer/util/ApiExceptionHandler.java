@@ -23,7 +23,7 @@ public class ApiExceptionHandler implements ExceptionMapper<Exception> {
 
         MNResponse mnResponse;
         if (e instanceof MNException) {
-            logger.debug("SoulException handled: {}", e.toString());
+            logger.debug("contextizerException handled: {}", e.toString());
             MNStatus status = ((MNException) e).status;
             mnResponse = new MNResponse(status);
         } else {

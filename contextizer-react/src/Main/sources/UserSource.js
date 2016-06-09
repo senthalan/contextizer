@@ -7,8 +7,11 @@ var UserSource = {
     refresh: function (req) {
         return contextizerRequest.post('/user/refresh', req);
     },
-    updateBasic: function (user) {
+    submitRegister: function (user) {
         return contextizerRequest.post('/user', user);
+    },
+    submitSubscribe: function (SubscriptionReq) {
+        return contextizerRequest.post('/user/subscribe',SubscriptionReq);
     }
 };
 

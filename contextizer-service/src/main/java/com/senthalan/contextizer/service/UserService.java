@@ -96,10 +96,17 @@ public class UserService {
 
     }
 
-    public User subscribe(SubscriptionReq subscriptionReq) throws MNException {
+    public SignInUserResp subscribe(SubscriptionReq subscriptionReq) throws MNException {
         LOGGER.debug("User SubscriptionReq received with params : {}", subscriptionReq);
 
         List<Media> Medias=new ArrayList<>();
+        while (subscriptionReq.mediaId.indexOf(null)!=-1){
+            subscriptionReq.mediaId.remove(null);
+        }
+        while (subscriptionReq.mediaId.indexOf("empty")!=-1){
+            subscriptionReq.mediaId.remove("empty");
+        }
+
         for (int mId=0; mId<subscriptionReq.mediaId.size(); mId++){
             Media media = mediaRepository.findOne(subscriptionReq.mediaId.get(mId));
             if (media == null) {
@@ -111,8 +118,19 @@ public class UserService {
         if (user == null) {
             throw new MNException(MNStatus.NO_SUCH_USER);
         }
+//        int e=subscriptionReq.mediaId.
+        user.status=User.UserStatus.REGISTERED;
         user.subscriptions=subscriptionReq.mediaId;
 
-        return userRepository.save(user);
+        userRepository.save(user);
+
+        SignInUserResp signInUserResp;
+
+        //24 hours non-expire token
+        String accessToken = authService.createJWT(user.id, user.email, 1440);
+        signInUserResp = new SignInUserResp(accessToken, user.maskPassword());
+
+        LOGGER.debug("User refresh response with success userId : {}", signInUserResp.user.id);
+        return signInUserResp;
     }
 }

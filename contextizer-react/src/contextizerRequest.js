@@ -11,6 +11,7 @@ var contextizerRequest = {
                 .post(baseUrl + uri)
                 .send(body)
                 .set('Content-Type', 'application/json')
+                .set('Authorization', localStorage.getItem("Authorization"))
                 .set('Accept', 'application/json')
                 .end(function(err, res){
                     if (err || !res.ok) {
@@ -33,6 +34,7 @@ var contextizerRequest = {
                 .put(baseUrl + uri)
                 .send(body)
                 .set('Content-Type', 'application/json')
+                .set('Authorization', localStorage.getItem("Authorization"))
                 .set('Accept', 'application/json')
                 .end(function(err, res){
                     if (err || !res.ok) {

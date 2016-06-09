@@ -52,7 +52,7 @@ public class User {
 
 
     public enum UserStatus {
-        INITIAL, VERIFIED, UNREGISTERED
+        INITIAL, REGISTERED
     }
 
     public static class TagCount {

@@ -8,8 +8,8 @@ class UserHomeActions {
         this.generateActions('resetHome');
     }
 
-    getAllNewses() {
-        UserHomeSource.getAllNewses()
+    getAllNewses(req) {
+        UserHomeSource.getAllNewses(req)
             .then(this.getAllNewsesSuccess)
             .catch(this.getAllNewsesFailed);
         return 1;
@@ -24,8 +24,6 @@ class UserHomeActions {
     }
 
     getAllMedia(user) {
-        user=UserStore.user;
-        console.log('get news for user : '+user);
         UserHomeSource.getAllMedia(user)
             .then(this.getAllMediaSuccess);
         return 1;
@@ -33,6 +31,16 @@ class UserHomeActions {
 
     getAllMediaSuccess(medias){
         return medias
+    }
+
+    clickMe(req){
+        UserHomeSource.clickMe(req)
+            .then(this.getRelatedNews);
+        return 1;
+    }
+
+    getRelatedNews(relatedNews){
+        return relatedNews;
     }
 
 }

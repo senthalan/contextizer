@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
-       xmlns="http://www.springframework.org/schema/beans"
+       xmlns="http://www.springframework.org/schema/beans" xmlns:task="http://www.springframework.org/schema/task"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
         http://www.springframework.org/schema/context
-        http://www.springframework.org/schema/context/spring-context.xsd ">
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/task
+        http://www.springframework.org/schema/task/spring-task.xsd">
 
     <context:annotation-config/>
 
@@ -22,6 +24,24 @@
     <bean id="jsonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
 
     <bean id="corsFilter" class="org.apache.cxf.rs.security.cors.CrossOriginResourceSharingFilter"/>
+
+    <bean id="authFilter" class="com.senthalan.contextizer.util.AuthorizationFilter"/>
+
+    <bean id="exceptionHandler" class="com.senthalan.contextizer.util.ApiExceptionHandler"/>
+
+    <bean id="taskExecutor"
+          class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <property name="corePoolSize" value="5"/>
+        <property name="maxPoolSize" value="10"/>
+        <property name="WaitForTasksToCompleteOnShutdown" value="true"/>
+    </bean>
+
+
+    <!--<bean id="rssRunner" class="com.senthalan.contextizer.rss.RssRunner"/>-->
+
+    <!--<task:scheduled-tasks>-->
+        <!--<task:scheduled ref="rssRunner" method="run" fixed-delay="${rss.poll.interval}" />-->
+    <!--</task:scheduled-tasks>-->
 
 
     <import resource="contextizer-server-rest-context.xml"/>

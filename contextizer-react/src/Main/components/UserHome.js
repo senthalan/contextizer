@@ -1,9 +1,17 @@
-import React, {Component} from 'react'
+import  React, {Component} from 'react'
 import AltContainer from 'alt-container';
 
 import {Card,
     FontIcon, Snackbar,DropDownMenu, MenuItem,FloatingActionButton,Dialog,FlatButton} from 'material-ui';
-import {ContentAdd,Checkbox} from 'material-ui';
+import {Checkbox} from 'material-ui';
+
+import ContentSetting from '../../../node_modules/material-ui/lib/svg-icons/action/settings';
+import NewsFirst from '../../../node_modules/material-ui/lib/svg-icons/navigation/first-page';
+import NewsLast from '../../../node_modules/material-ui/lib/svg-icons/navigation/last-page'
+import NewsNext from '../../../node_modules/material-ui/lib/svg-icons/navigation/chevron-right';
+import NewsBack from '../../../node_modules/material-ui/lib/svg-icons/navigation/chevron-left';
+
+;
 
 import UserHomeActions from './../actions/UserHomeActions';
 import UserActions from './../actions/UserActions';
@@ -17,40 +25,36 @@ String.prototype.toProperCase = function () {
 
 class UserHome extends Component {
 
+
     constructor(props) {
         super(props);
+        this.skip = 0;
         this.state = {
-            value: 1,
+            selectedMedia: "",
+            selectedTag: "",
             logoutOpen: false,
-            subscribeOpen: false
+            subscribeOpen: false,
+            settingOpen: false
         };
 
     }
 
     componentDidMount() {
-        setTimeout(UserHomeActions.getAllMedia.bind(this), 0);
+        setTimeout(UserHomeActions.getAllNewses.bind(this, {userId: this.props.user.id}), 0);
+        setTimeout(UserHomeActions.getAllMedia.bind(this, this.props.user), 0);
 
-        if (this.pollInterval) {
-            clearInterval(this.pollInterval)
+        if (this.props.user.status == "INITIAL") {
+            this.subscribeOpen();
         }
-        this.pollInterval = setInterval(this.poll.bind(this), 15000);
+    }
 
-        $(document).ready(function () {
+    settingOpen() {
+        this.setState({settingOpen: true});
+    }
 
-            $(window).scroll(function () {
-                if ($(this).scrollTop() > 100) {
-                    $('.scrollup').fadeIn();
-                } else {
-                    $('.scrollup').fadeOut();
-                }
-            });
 
-            $('.scrollup').click(function () {
-                $("html, body").animate({scrollTop: 0}, 600);
-                return false;
-            });
-        });
-        //UserHomeActions.getAllNewses(this.props.user);
+    settingClose() {
+        this.setState({settingOpen: false});
     }
 
     logoutOpen() {
@@ -64,6 +68,14 @@ class UserHome extends Component {
 
 
     subscribeOpen() {
+        this.subscribeList = new Array(this.props.medias.length);
+        this.subscribeLength = this.props.user.subscriptions.length;
+        var i = 0;
+        this.props.user.subscriptions.map((media) => {
+            this.subscribeList.fill(media, i, i + 1);
+            i = i + 1;
+        });
+        console.log(this.subscribeList);
         this.setState({subscribeOpen: true});
     }
 
@@ -80,39 +92,120 @@ class UserHome extends Component {
 
     }
 
-    isSubscribe(name) {
-        var ans;
-        this.props.user.subscriptions.forEach(function (value) {
-            if (name = value.name) {
-                ans = true;
+
+    handleChange(event, index, val) {
+        this.setState({selectedMedia: val});
+        this.skip = 0;
+        var req = {"userId": this.props.user.id, "mediaId": val, "tag": this.state.selectedTag};
+        UserHomeActions.getAllNewses(req);
+    }
+
+    sortNews(event, index, t) {
+        this.setState({selectedTag: t});
+        this.skip = 0;
+        var req = {"userId": this.props.user.id, "mediaId": this.state.selectedMedia, "tag": t};
+        UserHomeActions.getAllNewses(req);
+    }
+
+    handleSubscribe(event, isInputChecked) {
+        var empty = "empty";
+        var inList = (element, index, array) => (element === event.currentTarget.id);
+        var listEmpty = (element, index, array) => (element === empty);
+        console.log("clicked " + event.currentTarget.id);
+
+        var i = this.subscribeList.findIndex(listEmpty);
+        console.log("empty found " + i);
+        if (isInputChecked) {
+            if (i != 0) {
+                this.subscribeList.fill(event.currentTarget.id, this.subscribeLength, this.subscribeLength + 1);
             }
             else {
-                ans = false;
+                this.subscribeList.fill(event.currentTarget.id, i, i + 1);
             }
-        });
-        console.log(name + " == " + ans);
-        return ans;
+            this.subscribeLength = this.subscribeLength + 1;
+        }
+        else {
+            var ind = this.subscribeList.findIndex(inList);
+            console.log("remove at " + ind);
+            this.subscribeList.fill(empty, ind, ind + 1);
+            this.subscribeLength = this.subscribeLength - 1;
+        }
+        console.log(this.subscribeList);
+
     }
 
-
-    handleChange(event, index, value) {
-        this.setState({value});
+    submitSubscribe() {
+        var SubscriptionReq = {
+            userId: this.props.user.id,
+            mediaId: this.subscribeList
+        };
+        UserActions.submitSubscribe(SubscriptionReq);
     }
+
+    clickMe(news) {
+        var req = {"newsId": news, "userId": this.props.user.id};
+        UserHomeActions.clickMe(req);
+    }
+
+    newsBackward() {
+        if (this.skip > 0) {
+            this.skip = this.skip - 1;
+            var req = {
+                "userId": this.props.user.id,
+                "mediaId": this.state.selectedMedia,
+                "tag": this.state.selectedTag,
+                "skip": this.skip
+            };
+            UserHomeActions.getAllNewses(req);
+        }
+    }
+
+    newsForward() {
+        if (this.skip < this.props.newses.totalPages - 1) {
+            this.skip = this.skip + 1;
+            var req = {
+                "userId": this.props.user.id,
+                "mediaId": this.state.selectedMedia,
+                "tag": this.state.selectedTag,
+                "skip": this.skip
+            };
+            UserHomeActions.getAllNewses(req);
+        }
+    }
+
+    newsFirst() {
+        if (this.skip > 0) {
+            this.skip = 0;
+            var req = {
+                "userId": this.props.user.id,
+                "mediaId": this.state.selectedMedia,
+                "tag": this.state.selectedTag,
+                "skip": this.skip
+            };
+            UserHomeActions.getAllNewses(req);
+        }
+    }
+
+    newsLast() {
+        if (this.skip < this.props.newses.totalPages - 1) {
+            this.skip = this.props.newses.totalPages - 1;
+            var req = {
+                "userId": this.props.user.id,
+                "mediaId": this.state.selectedMedia,
+                "tag": this.state.selectedTag,
+                "skip": this.skip
+            };
+            UserHomeActions.getAllNewses(req);
+        }
+    }
+
 
     render() {
         return (
             <div>
-                    <FloatingActionButton
-                        secondary={true}
-                        iconClassName={"fa fa-power-off"}
-                        tooltip="Log out"
-                        tooltipPosition="top-left"
-                        onTouchTap={this.logoutOpen.bind(this)}>
-                    </FloatingActionButton>
-
-                        <Dialog
-                            title="Confirm Logout"
-                            actions={[
+                <Dialog
+                    title="Confirm Logout"
+                    actions={[
                                       <FlatButton
                                         label="Later"
                                         secondary={true}
@@ -125,94 +218,191 @@ class UserHome extends Component {
                                         onTouchTap={UserActions.logout}
                                       />
                                     ]}
-                            modal={false}
-                            open={this.state.logoutOpen}
-                            onRequestClose={this.logoutClose.bind(this)}
-                        >
-                            Are you sure want to logout ?
-                        </Dialog>
+                    modal={false}
+                    open={this.state.logoutOpen}
+                    onRequestClose={this.logoutClose.bind(this)}
+                >
+                    Are you sure want to logout ?
+                </Dialog>
 
-                    <FloatingActionButton
-                        secondary={true}
-                        iconClassName={"muidocs-icon-custom-github"}
-                        tooltip="Log out"
-                        tooltipPosition="top-right"
-                        onTouchTap={this.subscribeOpen.bind(this)}>
-                    </FloatingActionButton>
 
-                        <Dialog
-                            title="subscribe Details"
-                            modal={false}
-                            open={this.state.subscribeOpen}
-                            onRequestClose={this.subscribeClose.bind(this)}
-                        >
-                            subscribe details
+                <Dialog
+                    title="subscribe Details"
+                    modal={false}
+                    open={this.state.subscribeOpen}
+                    onRequestClose={this.subscribeClose.bind(this)}
+                    autoScrollBodyContent={true}
+                    actions={[
+                                <FlatButton
+                                        label="Later"
+                                        secondary={true}
+                                        onTouchTap={this.subscribeClose.bind(this)}
+                                      />,
+                                <FlatButton
+                                    label="Update Subscribe Details"
+                                    primary={true}
+                                    keyboardFocused={true}
+                                    onTouchTap={this.submitSubscribe.bind(this)}
+                                />
+                            ]}
+                >
+                    subscribe details
 
-                            <div className="col-md-12">
+                    <div className="col-md-12">
+                        {this.props.medias.map((media) => {
+                            return (
+                                <Checkbox className="margin-top-20" id={media.id} label={media.name}
+                                          defaultChecked={media.subscribed} onCheck={this.handleSubscribe.bind(this)}/>
+                            )
+                        })
+                        }
+                    </div>
 
-                                {this.props.medias.map((media) => {
-                                    return (
-                                        <Checkbox className="margin-top-20" label={this.isSubscribe(media.name)}/>
-                                    )
-                                })
-                                }
-                            </div>
-
-                        </Dialog>
+                </Dialog>
 
                 <div className="container-fluid">
                     <div className="row">
-
                         <div className="media-select">
-                            <DropDownMenu value={this.state.value} onChange={this.handleChange.bind(this)}>
-                                <MenuItem value={1} primaryText="All News"/>
+                            <DropDownMenu value={this.state.selectedMedia} onChange={this.handleChange.bind(this)}>
+                                <MenuItem value={""} primaryText="."/>
+                                <MenuItem value={""} primaryText="All News"/>
                                 {this.props.medias.map((media) => {
                                     return (
-                                        <MenuItem value={media.name} primaryText={media.name.toProperCase()}/>
+                                        <MenuItem value={media.name} primaryText={media.name.toProperCase()}
+                                                  disabled={!media.subscribed}/>
                                     )
                                 })
                                 }
                             </DropDownMenu>
                         </div>
 
-                        {this.props.newses.map((news) => {
+                        <div className="tag-select">
+                            <DropDownMenu value={this.state.selectedTag} onChange={this.sortNews.bind(this)}>
+                                <MenuItem value={""} primaryText="."/>
+                                <MenuItem value={""} primaryText="All Tags"/>
+                                {this.props.tags.map((tag) => {
+                                    return (
+                                        <MenuItem value={tag} primaryText={tag}/>
+                                    )
+                                })
+                                }
+                            </DropDownMenu>
+                        </div>
+
+                        {this.props.newsState.isFailed() &&
+                        (
+                            <div className='col-md-8 col-md-offset-2 margin-top-20 alert alert-danger'>
+                                {this.props.newsState.message}
+                            </div>
+                        )
+                        }
+
+                        {this.props.newses.content.map((news) => {
                                 return (
-                                    <a href={news.link} target="new">
+                                    <div>
                                         <Card
-                                            className='col-md-8 col-md-offset-2 margin-top-20 news-card-done'>
-                                            <div className="col-md-12 margin-top-10 news-text">
-                                                <h4>
-                                                    {news.text}
-                                                </h4>
-                                            </div>
-                                            <div className="col-md-12 margin-top-10 news-description">
-                                                {news.description}
-                                                <div className="margin-top-10 ">
-                                                    {news.tags.map((tag) => {
-                                                        return (
-                                                            tag !== 'common' &&
-                                                            <span>
-                                                                <span
-                                                                    className="label label-default">{tag}</span>&nbsp;&nbsp;
-                                                            </span>
-                                                        )
-                                                    })
-                                                    }
+                                            className={ news.seen ? 'col-md-8 col-md-offset-2 margin-top-20 news-card-done' :'col-md-8 col-md-offset-2 margin-top-20 '}>
+                                            <a href={news.link} target="new" onClick={this.clickMe.bind(this, news.id)}>
+                                                <div>
+                                                    <div className="col-md-12 margin-top-10 news-text">
+                                                        <h4>
+                                                            {news.text}
+                                                        </h4>
+                                                    </div>
+                                                    <div className="col-md-12 margin-top-10 news-description">
+                                                        {news.description}
+                                                        <div className="margin-top-10">
+                                                        <span>
+                                                            <span
+                                                                className="label label-default news-tag">{news.tags}</span>
+                                                        </span>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-12">
+                                                        <hr/>
+                                                    </div>
+                                                    <div className="col-md-6 margin-10">
+                                                <span
+                                                    className="label label-default">{news.media}</span>&nbsp;&nbsp;
+                                                        {moment(news.createdTime).format('MMM Do, h:mm A')}
+                                                    </div>
+                                                    <div className="col-md-6 margin-10 text-right">
+                                                        <strong>{news.webReach}</strong>&nbsp;Views
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div className="col-md-12">
-                                                <hr/>
-                                            </div>
+                                            </a>
+                                            {
+                                                (this.props.relatedNewsRes.newsId == news.id) &&
+                                                this.props.relatedNewsRes.relatedNews.map((rnews) => {
+                                                        return (
+                                                            <div className="col-md-3  related-news">
+                                                                <a href={rnews.link} target="new">
+                                                                    <Card>
+                                                                        <div className="col-md-12 margin-top-10 news-text">
+                                                                            <h4>
+                                                                                {rnews.text} - {rnews.media}
+                                                                            </h4>
+                                                                        </div>
+                                                                        <div
+                                                                            className="col-md-12 margin-top-10 news-description-related">
+                                                                            {rnews.description}
+                                                                        </div>
+                                                                    </Card>
+                                                                </a>
+                                                            </div>
+                                                        )
+                                                    }
+                                                )
+                                            }
+
                                         </Card>
-                                    </a>
+
+
+                                    </div>
                                 )
                             }
                         )
                         }
 
-                        <div className="btn btn-default scrollup">
-                            <span className="text">New at top</span>
+                        <div className="scrollup">
+                            <div className="col-lg-1">
+                                <FloatingActionButton
+                                    secondary={true}
+                                    iconClassName={"fa fa-power-off"}
+                                    tooltip="Log out"
+                                    tooltipPosition="top"
+                                    onTouchTap={this.logoutOpen.bind(this)}>
+                                </FloatingActionButton>
+                                <br/>
+                                <br/>
+                                <FloatingActionButton
+                                    secondary={true}
+                                    iconClassName={"muidocs-icon-custom-github"}
+                                    tooltip="subscribe"
+                                    tooltipPosition="top"
+                                    onTouchTap={this.subscribeOpen.bind(this)}>
+                                    <ContentSetting />
+                                </FloatingActionButton>
+                            </div>
                         </div>
+                    </div>
+
+                    {!this.props.newsState.isFailed() &&
+                    (
+                        <div className="col-md-8 col-md-offset-2 page-number">
+
+                            <NewsFirst onTouchTap={this.newsFirst.bind(this)}></NewsFirst>
+                            <NewsBack onTouchTap={this.newsBackward.bind(this)}></NewsBack>
+                            &nbsp;<label> {this.props.newses.number + 1} of {this.props.newses.totalPages} </label>&nbsp;
+                            <NewsNext onTouchTap={this.newsForward.bind(this)}></NewsNext>
+                            <NewsLast onTouchTap={this.newsLast.bind(this)}></NewsLast>
+                        </div>
+                    )
+                    }
+
+
+                    <div className="col-md-8 col-md-offset-2 modal-footer margin-top-40">
+                        All rights
                     </div>
                 </div>
             </div>

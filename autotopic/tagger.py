@@ -115,7 +115,7 @@ class Reader:
     '''
 
     match_apostrophes = re.compile(r'`|’')
-    match_paragraphs = re.compile(r'[\.\?!\t\n\r\f\v]+')
+    match_paragraphs = re.compile(r'[\.\?!\t\n\r\f]+')
     match_phrases = re.compile(r'[,;:\(\)\[\]\{\}<>]+')
     match_words = re.compile(r'[\w\-\'_/&]+')
     
@@ -374,47 +374,109 @@ if __name__ == '__main__':
     import pickle
     import sys
     import unicodedata
+    import lxml.html
+    from bson.objectid import ObjectId
 
 
     client = MongoClient('localhost', 27111)
     newsDB = client.contextizer.news
     newsWithTagDB = client.contextizer.news_with_tag
     tagDB = client.contextizer.tag
-    results = newsDB.find()
+
+
+    technologyDB=client.contextizer_dataset.technology
+    worldDB=client.contextizer_dataset.world
+    businessDB=client.contextizer_dataset.business
+    localDB=client.contextizer_dataset.local
 
     #newsWithTagDB.remove()
     #tagDB.remove()
 
 
-    weights = pickle.load(open('/home/senthalan/cse_uom/software_project/contextizer-service/src/main/autotopic/data/dict.pkl', 'rb'))
+
+    weights = pickle.load(open('/home/senthalan/cse_uom/software_project/autotopic/data/dict.pkl', 'rb'))
     tagger = Tagger(Reader(), Stemmer(), Rater(weights))
 
+    print "started"
+    while True:
+        results = newsDB.find()
 
-    for record in results:
-        predict_lang = langid.classify(str(unicodedata.normalize('NFKD', record["text"]).encode('ascii','ignore')))
-        if predict_lang[1] >= .9:
-            language = predict_lang[0]
-        else:
-            language = 'NA'
-        print language
+        for record in results:
+            newsDB.remove(record)
+            record["text"]=str(unicodedata.normalize('NFKD', record["text"]).encode('ascii','ignore'))
+            record["description"]=str(unicodedata.normalize('NFKD', record["description"]).encode('ascii','ignore'))
 
-        tags=[]
+            record["description"]=lxml.html.fromstring(record["description"]).text_content()
+            record["text"]=lxml.html.fromstring(record["text"]).text_content()
 
-        tags=tagger(str(unicodedata.normalize('NFKD', record["description"]).encode('ascii','ignore')))
-        print tags
 
-        newTags=[]
-        for tag in tags:
-            t=unicode(tag)
-            newTags.append(t)
+            tags=[]
+
+            tags=tagger(record["description"])
+
+            genTopics={'world':0,'business': 0, 'technology': 0, 'local' :0}
+            keyword=[]
             try:
-                tagDB.insert({"name":t})
-            except pymongo.errors.DuplicateKeyError:
-                continue
+                record["tags"]
+                tag=str(unicodedata.normalize('NFKD', record["tags"][0]).encode('ascii','ignore'))
+                print tag
 
-        #print "delete"
-        newsDB.remove(record)
-        newsWithTagDB.insert({"mediaId":record["mediaId"],"description":record["description"],"text":record["text"],"link":record["link"],"tags":newTags})
+                if tag=="world":
+                    for genTag in tags:
+                        t=unicode(genTag)
+                        keyword.append(t)
+                        try:
+                            worldDB.insert({"name":t})
+                        except pymongo.errors.DuplicateKeyError:
+                            continue
+                elif tag=="business":
+                    for genTag in tags:
+                        t=unicode(genTag)
+                        keyword.append(t)
+                        try:
+                            businessDB.insert({"name":t})
+                        except pymongo.errors.DuplicateKeyError:
+                            continue
+                elif tag=="technology":
+                    for genTag in tags:
+                        t=unicode(genTag)
+                        keyword.append(t)
+                        try:
+                            technologyDB.insert({"name":t})
+                        except pymongo.errors.DuplicateKeyError:
+                            continue
+                elif tag=="local":
+                    for genTag in tags:
+                        t=unicode(genTag)
+                        keyword.append(t)
+                        try:
+                            localDB.insert({"name":t})
+                        except pymongo.errors.DuplicateKeyError:
+                            continue
+            except (KeyError,IndexError):
+                print "tag is not available"
+                for genTag in tags:
+                    t=unicode(genTag)
+                    keyword.append(t)
+                    if worldDB.find({"name":t}).count()>0:
+                        genTopics['world']+=1
+                    if businessDB.find({"name":t}).count()>0:
+                        genTopics['business']+=1
+                    if technologyDB.find({"name":t}).count()>0:
+                        genTopics['technology']+=1
+                    if localDB.find({"name":t}).count()>0:
+                        genTopics['local']+=1
+
+                tag=max(genTopics, key=genTopics.get)
+                if genTopics[tag]==0:
+                    print "tag cant be generated from our system"
+                    tag="other"
+
+            # else:
+            #     print "its a mistake";
+
+            print "news publish "+record["description"]
+            newsWithTagDB.insert({"media":record["media"],"description":record["description"],"text":record["text"],"link":record["link"],"tags":tag,"keywords" : keyword,"views" :record["views"], "createdTime": record["createdTime"]})
 
     client.close()
 

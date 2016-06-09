@@ -10,6 +10,7 @@ require('./Main.scss');
 
 import MediaUserStore from './stores/MediaUserStore';
 import MediaHomeContainer from './containers/MediaHomeContainer'
+import MediaSettingsContainer from './containers/MediaSettingsContainer'
 import MediaLogin from './components/MediaLogin'
 
 
@@ -37,7 +38,21 @@ class Main extends Component {
             <div>
                 {this.state.isLoggedIn ?
                     (
-                        <MediaHomeContainer/>
+                        <Tabs
+                            initialSelectedIndex={0}>
+                            <Tab
+                                icon={<FontIcon className="fa fa-home fa-2x"></FontIcon>}
+                                label={this.state.media.name}
+                                selected={true}>
+                                <MediaHomeContainer/>
+                            </Tab>
+                            <Tab
+                                icon={<FontIcon className="fa fa-cogs fa-2x"></FontIcon>}
+                                label="SETTINGS">
+                                <MediaSettingsContainer/>
+                            </Tab>
+                        </Tabs>
+
                     )
                     :
                     (
