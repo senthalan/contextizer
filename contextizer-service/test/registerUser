@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="http://localhost:3000/" />
+<title>registerUser</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">registerUser</td></tr>
+</thead><tbody>
+<tr>
+	<td>open</td>
+	<td>/</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=registerUser</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=email</td>
+	<td>testuser@gmail.com</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=password</td>
+	<td>123123</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=passConform</td>
+	<td>123123</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=574d200d44ae77f7dbe9a884</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=5759a16c84ae68d329c7f3ca</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=subscribe</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=574d200d44ae77f7dbe9a884</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=5759a16c84ae68d329c7f3ca</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>css=#local &gt; div &gt; div &gt; div</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>xpath=(//span[@id='1']/div/div/div)[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=subscribe</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=575d8c2984ae32b4494b8385</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//body/div[4]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//a[@id='575d7d7ecbc24a100aa6d99d']/div/div[2]/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//a[@id='575d7bcacbc24a100aa6d996']/div/div[2]/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//a[@id='575d7b48cbc24a100aa6d98f']/div/div[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//a[@id='575d7b47cbc24a100aa6d98c']/div/div[2]/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=logout</td>
+	<td></td>
+</tr>
+
+</tbody></table>
+</body>
+</html>
