@@ -43,6 +43,15 @@ class UserHomeActions {
         return relatedNews;
     }
 
+    getAllTags(){
+        UserHomeSource.getAllTags()
+            .then(this.getAllTagsSuccess);
+    }
+
+    getAllTagsSuccess(tags){
+        return tags;
+    }
+
 }
 
 export  default alt.createActions(UserHomeActions);

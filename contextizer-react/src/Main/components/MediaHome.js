@@ -7,10 +7,10 @@ import {Card, CardHeader, CardTitle, CardText,CardActions,
     Dialog, FlatButton, Snackbar} from 'material-ui';
 
 import ContentAdd from '../../../node_modules/material-ui/lib/svg-icons/content/add';
-import NewsFirst from '../../../node_modules/material-ui/lib/svg-icons/av/fast-rewind';
-import NewsLast from '../../../node_modules/material-ui/lib/svg-icons/av/fast-forward'
-import NewsNext from '../../../node_modules/material-ui/lib/svg-icons/av/skip-next';
-import NewsBack from '../../../node_modules/material-ui/lib/svg-icons/av/skip-previous';
+//import NewsFirst from '../../../node_modules/material-ui/lib/svg-icons/av/fast-rewind';
+//import NewsLast from '../../../node_modules/material-ui/lib/svg-icons/av/fast-forward'
+//import NewsNext from '../../../node_modules/material-ui/lib/svg-icons/av/skip-next';
+//import NewsBack from '../../../node_modules/material-ui/lib/svg-icons/av/skip-previous';
 
 import MediaHomeActions from './../actions/MediaHomeActions';
 import MediaUserActions from './../actions/MediaUserActions';
@@ -58,10 +58,10 @@ class MediaHome extends Component {
 
 
     componentDidMount() {
-        var req = {mediaId: this.props.media.name};
+        var req = {mediaId: this.props.media.id};
         setTimeout(MediaHomeActions.getAllNewses.bind(this, req), 0);
         clearInterval(this.pollInterval);
-        this.pollInterval = setInterval(MediaHomeActions.getAllNewses.bind(this, {mediaId: this.props.media.name}), 15000);
+        this.pollInterval = setInterval(MediaHomeActions.getAllNewses.bind(this, {mediaId: this.props.media.id}), 15000);
     }
 
     componentWillUnmount() {
@@ -80,6 +80,7 @@ class MediaHome extends Component {
     publishNews() {
         var news = {
             media: this.props.media.name,
+            mediaId: this.props.media.id,
             text: this.refs.text.getValue(),
             description: this.refs.description.getValue(),
             link: this.refs.link.getValue(),
@@ -273,6 +274,15 @@ class MediaHome extends Component {
                                             <i className="fa fa-globe"/>
                                             <a href={news.link} target="new">{news.link}</a>
                                         </div>
+                                        <div className="col-md-12">
+                                            <hr/>
+                                        </div>
+                                        <div className="col-md-6 margin-10">
+                                            {moment(news.createdTime).format('MMM Do, h:mm A')}
+                                        </div>
+                                        <div className="col-md-6 margin-10 text-right">
+                                            <strong>{news.webReach}</strong>&nbsp;Clicks
+                                        </div>
                                     </Card>
                                 )
                             }
@@ -284,12 +294,7 @@ class MediaHome extends Component {
                     (
                         <div className="col-md-8 col-md-offset-2 page-number">
 
-                            <NewsFirst onTouchTap={this.newsFirst.bind(this)}></NewsFirst>
-                            <NewsBack onTouchTap={this.newsBackward.bind(this)}></NewsBack>
-                            &nbsp;<label> {this.props.newses.number + 1}
-                            of {this.props.newses.totalPages} </label>&nbsp;
-                            <NewsNext onTouchTap={this.newsForward.bind(this)}></NewsNext>
-                            <NewsLast onTouchTap={this.newsLast.bind(this)}></NewsLast>
+
                         </div>
                     )
                     }

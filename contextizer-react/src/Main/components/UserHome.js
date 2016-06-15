@@ -5,13 +5,12 @@ import {Card,
     FontIcon, Snackbar,DropDownMenu, MenuItem,FloatingActionButton,Dialog,FlatButton} from 'material-ui';
 import {Checkbox} from 'material-ui';
 
-import ContentSetting from '../../../node_modules/material-ui/lib/svg-icons/action/settings';
+import ContentSetting from '../../../node_modules/material-ui/lib/svg-icons/av/playlist-add';
 import NewsFirst from '../../../node_modules/material-ui/lib/svg-icons/navigation/first-page';
 import NewsLast from '../../../node_modules/material-ui/lib/svg-icons/navigation/last-page'
 import NewsNext from '../../../node_modules/material-ui/lib/svg-icons/navigation/chevron-right';
 import NewsBack from '../../../node_modules/material-ui/lib/svg-icons/navigation/chevron-left';
 
-;
 
 import UserHomeActions from './../actions/UserHomeActions';
 import UserActions from './../actions/UserActions';
@@ -40,12 +39,10 @@ class UserHome extends Component {
     }
 
     componentDidMount() {
-        setTimeout(UserHomeActions.getAllNewses.bind(this, {userId: this.props.user.id}), 0);
         setTimeout(UserHomeActions.getAllMedia.bind(this, this.props.user), 0);
+        setTimeout(UserHomeActions.getAllNewses.bind(this, {userId: this.props.user.id}), 0);
+        setTimeout(UserHomeActions.getAllTags.bind(this), 0);
 
-        if (this.props.user.status == "INITIAL") {
-            this.subscribeOpen();
-        }
     }
 
     settingOpen() {
@@ -69,6 +66,7 @@ class UserHome extends Component {
 
     subscribeOpen() {
         this.subscribeList = new Array(this.props.medias.length);
+        console.log(this.props.medias.length);
         this.subscribeLength = this.props.user.subscriptions.length;
         var i = 0;
         this.props.user.subscriptions.map((media) => {
@@ -115,11 +113,14 @@ class UserHome extends Component {
 
         var i = this.subscribeList.findIndex(listEmpty);
         console.log("empty found " + i);
+        console.log(isInputChecked);
         if (isInputChecked) {
             if (i != 0) {
+                console.log("fill data without ");
                 this.subscribeList.fill(event.currentTarget.id, this.subscribeLength, this.subscribeLength + 1);
             }
             else {
+                console.log("fill data with replacement");
                 this.subscribeList.fill(event.currentTarget.id, i, i + 1);
             }
             this.subscribeLength = this.subscribeLength + 1;
@@ -203,15 +204,18 @@ class UserHome extends Component {
     render() {
         return (
             <div>
+
                 <Dialog
                     title="Confirm Logout"
                     actions={[
                                       <FlatButton
+                                        id="loginConform"
                                         label="Later"
                                         secondary={true}
                                         onTouchTap={this.logoutClose.bind(this)}
                                       />,
                                       <FlatButton
+                                         id="loginLater"
                                         label="Logout"
                                         primary={true}
                                         keyboardFocused={true}
@@ -234,11 +238,13 @@ class UserHome extends Component {
                     autoScrollBodyContent={true}
                     actions={[
                                 <FlatButton
+                                        id="subscribeLater"
                                         label="Later"
                                         secondary={true}
                                         onTouchTap={this.subscribeClose.bind(this)}
                                       />,
                                 <FlatButton
+                                    id="subscribeConform"
                                     label="Update Subscribe Details"
                                     primary={true}
                                     keyboardFocused={true}
@@ -263,12 +269,12 @@ class UserHome extends Component {
                 <div className="container-fluid">
                     <div className="row">
                         <div className="media-select">
-                            <DropDownMenu value={this.state.selectedMedia} onChange={this.handleChange.bind(this)}>
-                                <MenuItem value={""} primaryText="."/>
-                                <MenuItem value={""} primaryText="All News"/>
+                            <DropDownMenu id="mediaDropDown" value={this.state.selectedMedia} onChange={this.handleChange.bind(this)}>
+                                <MenuItem id="1" value={""} primaryText="."/>
+                                <MenuItem id="1" value={""} primaryText="All News"/>
                                 {this.props.medias.map((media) => {
                                     return (
-                                        <MenuItem value={media.name} primaryText={media.name.toProperCase()}
+                                        <MenuItem id={media.id} value={media.id} primaryText={media.name.toProperCase()}
                                                   disabled={!media.subscribed}/>
                                     )
                                 })
@@ -277,12 +283,12 @@ class UserHome extends Component {
                         </div>
 
                         <div className="tag-select">
-                            <DropDownMenu value={this.state.selectedTag} onChange={this.sortNews.bind(this)}>
-                                <MenuItem value={""} primaryText="."/>
-                                <MenuItem value={""} primaryText="All Tags"/>
+                            <DropDownMenu id="tagDropDown" value={this.state.selectedTag} onChange={this.sortNews.bind(this)}>
+                                <MenuItem id="1" value={""} primaryText="."/>
+                                <MenuItem id="1" value={""} primaryText="All Topics"/>
                                 {this.props.tags.map((tag) => {
                                     return (
-                                        <MenuItem value={tag} primaryText={tag}/>
+                                        <MenuItem id={tag.name} value={tag.name} primaryText={tag.name}/>
                                     )
                                 })
                                 }
@@ -302,7 +308,7 @@ class UserHome extends Component {
                                     <div>
                                         <Card
                                             className={ news.seen ? 'col-md-8 col-md-offset-2 margin-top-20 news-card-done' :'col-md-8 col-md-offset-2 margin-top-20 '}>
-                                            <a href={news.link} target="new" onClick={this.clickMe.bind(this, news.id)}>
+                                            <a id={news.id} href={news.link} target="new" onClick={this.clickMe.bind(this, news.id)}>
                                                 <div>
                                                     <div className="col-md-12 margin-top-10 news-text">
                                                         <h4>
@@ -336,7 +342,7 @@ class UserHome extends Component {
                                                 this.props.relatedNewsRes.relatedNews.map((rnews) => {
                                                         return (
                                                             <div className="col-md-3  related-news">
-                                                                <a href={rnews.link} target="new">
+                                                                <a id={"relate"+news.id} href={rnews.link} target="new">
                                                                     <Card>
                                                                         <div className="col-md-12 margin-top-10 news-text">
                                                                             <h4>
@@ -367,6 +373,7 @@ class UserHome extends Component {
                         <div className="scrollup">
                             <div className="col-lg-1">
                                 <FloatingActionButton
+                                    id="logout"
                                     secondary={true}
                                     iconClassName={"fa fa-power-off"}
                                     tooltip="Log out"
@@ -376,6 +383,7 @@ class UserHome extends Component {
                                 <br/>
                                 <br/>
                                 <FloatingActionButton
+                                    id="subscribe"
                                     secondary={true}
                                     iconClassName={"muidocs-icon-custom-github"}
                                     tooltip="subscribe"
@@ -391,18 +399,13 @@ class UserHome extends Component {
                     (
                         <div className="col-md-8 col-md-offset-2 page-number">
 
-                            <NewsFirst onTouchTap={this.newsFirst.bind(this)}></NewsFirst>
-                            <NewsBack onTouchTap={this.newsBackward.bind(this)}></NewsBack>
-                            &nbsp;<label> {this.props.newses.number + 1} of {this.props.newses.totalPages} </label>&nbsp;
-                            <NewsNext onTouchTap={this.newsForward.bind(this)}></NewsNext>
-                            <NewsLast onTouchTap={this.newsLast.bind(this)}></NewsLast>
                         </div>
                     )
                     }
 
 
                     <div className="col-md-8 col-md-offset-2 modal-footer margin-top-40">
-                        All rights
+                        <label id="userName">loggedin</label>
                     </div>
                 </div>
             </div>

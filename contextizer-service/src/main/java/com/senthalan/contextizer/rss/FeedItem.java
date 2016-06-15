@@ -54,7 +54,7 @@ public class FeedItem {
     public String toString() {
         return "FeedMessage [title=" + title + ", description=" + description
                 + ", link=" + link + ", author=" + author + ", guid=" + guid
-                + "]";
+                +"]";
     }
 
 }

@@ -10,7 +10,10 @@ class MediaUserStore {
 
         this.media = {};
         this.isLoggedIn = false;
+
+
         this.mediaState = NetworkState.init();
+        this.mediaRegisterState = NetworkState.init();
 
         if(localStorage.getItem("Authorization")){
             var media = JSON.parse(localStorage.getItem('media'));
@@ -26,12 +29,17 @@ class MediaUserStore {
             refresh:MediaUserActions.REFRESH,
             refreshSuccess:MediaUserActions.REFRESH_SUCCESS,
             refreshFailed:MediaUserActions.REFRESH_FAILED,
+            submitRegister:MediaUserActions.SUBMIT_REGISTER,
+            submitRegisterSuccess:MediaUserActions.SUBMIT_REGISTER_SUCCESS,
+            submitRegisterFailed:MediaUserActions.SUBMIT_REGISTER_FAILED
         });
     }
 
     login(media) {
         this.media = {};
         this.isLoggedIn = false;
+        console.log("media saved " +media );
+        localStorage.setItem("media", JSON.stringify(media));
         this.mediaState.load('Signing in ...');
     }
 
@@ -45,7 +53,15 @@ class MediaUserStore {
     }
 
     loginFailed(errorMessage) {
-        this.media = {};
+        if (errorMessage=="media not approved"){
+            localStorage.removeItem("Authorization");
+            console.log("media not approved");
+        }
+        else{
+            this.media = {};
+            localStorage.removeItem("Authorization");
+            localStorage.removeItem("media");
+        }
         this.isLoggedIn = false;
         this.mediaState.fail(errorMessage);
     }
@@ -67,7 +83,30 @@ class MediaUserStore {
     refreshFailed(errorMessage) {
         this.media = {};
         this.isLoggedIn = false;
+        localStorage.removeItem("Authorization");
+        localStorage.removeItem("media");
         this.mediaState.fail(errorMessage);
+    }
+
+    submitRegister(media) {
+        console.log('refreshing user with Subscribe');
+        this.isLoggedIn = false;
+        this.mediaRegisterState.load('Registering media...');
+    }
+
+    submitRegisterSuccess(media) {
+        console.log('media');
+        localStorage.setItem("media", JSON.stringify(media));
+        this.mediaRegisterState.succeed("registered");
+        this.mediaState.fail("media not approved");
+    }
+
+    submitRegisterFailed(errorMessage) {
+        this.user = {};
+        this.isLoggedIn = false;
+        localStorage.removeItem("Authorization");
+        localStorage.removeItem("media");
+        this.mediaRegisterState.fail(errorMessage);
     }
 
     logout(){

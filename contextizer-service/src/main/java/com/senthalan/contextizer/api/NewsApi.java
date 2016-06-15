@@ -43,26 +43,25 @@ public class NewsApi {
     @POST
     @Path("/search")
     @Authorize
-    public MNResponse<Page<NewsWithTag>> getNews(NewsSearchReq req)  throws MNException {
+    public MNResponse<Page<NewsWithTag>> getNews(NewsSearchReq req) throws MNException {
         return new MNResponse<>(newsService.getNews(req));
     }
 
     @GET
     @Path("/tags")
-    public MNResponse<List<Tag>> getTags()  {
+    public MNResponse<List<Tag>> getTags() {
         return new MNResponse<>(newsService.getTags());
     }
 
     @GET
     @Path("/search")
-    public MNResponse<Page<News>> getAll()  {
+    public MNResponse<Page<News>> getAll() {
         return new MNResponse<>(newsService.getAll());
     }
 
     @POST
     @Path("/click")
-    public MNResponse<RelatedNewsResponse> click(NewsClickReq req) throws MNException{
+    public MNResponse<RelatedNewsResponse> click(NewsClickReq req) throws MNException {
         return new MNResponse<>(newsService.click(req));
     }
-
 }

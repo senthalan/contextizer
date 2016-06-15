@@ -52,6 +52,7 @@ public class RSSFeedParser {
             String author = "";
             String pubdate = "";
             String guid = "";
+            String category="";
 
             // First create a new XMLInputFactory
             XMLInputFactory inputFactory = XMLInputFactory.newInstance();

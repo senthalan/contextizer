@@ -16,7 +16,7 @@ class UserStore {
         this.userRegisterState = NetworkState.init();
 
 
-        if(localStorage.getItem("Authorization")){
+        if(localStorage.getItem("UserAuthorization")){
             var user = JSON.parse(localStorage.getItem('user'));
             UserActions.refresh(user);
         }
@@ -46,7 +46,7 @@ class UserStore {
     loginSuccess(signinResp) {
         console.log('log in user sucess');
         this.user = signinResp.user;
-        localStorage.setItem("Authorization", signinResp.accessToken);
+        localStorage.setItem("UserAuthorization", signinResp.accessToken);
         localStorage.setItem("user", JSON.stringify(this.user));
         this.isLoggedIn = true;
         this.userState.succeed('Welcome ' + this.user.email);
@@ -69,7 +69,7 @@ class UserStore {
     refreshSuccess(signinResp) {
         console.log('refresh user sucess');
         this.user = signinResp.user;
-        localStorage.setItem("Authorization", signinResp.accessToken);
+        localStorage.setItem("UserAuthorization", signinResp.accessToken);
         localStorage.setItem("user", JSON.stringify(this.user));
         this.isLoggedIn = true;
         this.userState.succeed('Welcome ' + this.user.email);
@@ -84,7 +84,7 @@ class UserStore {
     }
 
     logout(){
-        localStorage.removeItem("Authorization");
+        localStorage.removeItem("UserAuthorization");
         localStorage.removeItem("user");
         this.user = {};
         console.log('log out user success byeee '+ this.user.email);
@@ -107,7 +107,7 @@ class UserStore {
     submitRegisterSuccess(loginResp) {
         console.log('refresh user sucess');
         this.user = loginResp.user;
-        localStorage.setItem("Authorization", loginResp.accessToken);
+        localStorage.setItem("UserAuthorization", loginResp.accessToken);
         localStorage.setItem("user", JSON.stringify(this.user));
         this.isLoggedIn = true;
         this.userState.succeed('Welcome ' + this.user.email);

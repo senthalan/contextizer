@@ -31,8 +31,8 @@ public class MediaApi {
     MediaService mediaService;
 
     @POST
-    public MNResponse<String> registerMedia(Media media) throws MNException {
-        return new MNResponse<String>(mediaService.registerMedia(media));
+    public MNResponse<Media> registerMedia(Media media) throws MNException {
+        return new MNResponse<Media>(mediaService.registerMedia(media));
     }
 
 
@@ -57,6 +57,12 @@ public class MediaApi {
     @Authorize
     public MNResponse<SignInMediaResp> refresh(Media media) throws MNException {
         return new MNResponse<>(mediaService.refresh(media));
+    }
+
+    @POST
+    @Path("/resendToken")
+    public MNResponse<String> resendToken(Media media) throws MNException {
+        return new MNResponse<String>(mediaService.resendToken(media));
     }
 
     @PUT

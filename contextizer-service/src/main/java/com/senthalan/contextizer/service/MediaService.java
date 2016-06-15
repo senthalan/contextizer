@@ -2,14 +2,15 @@ package com.senthalan.contextizer.service;
 
 
 import com.senthalan.contextizer.domain.Media;
+import com.senthalan.contextizer.domain.Tag;
 import com.senthalan.contextizer.domain.User;
-import com.senthalan.contextizer.message.MNStatus;
-import com.senthalan.contextizer.message.PasswordChangeReq;
-import com.senthalan.contextizer.message.SignInMediaResp;
+import com.senthalan.contextizer.message.*;
 import com.senthalan.contextizer.repo.MediaRepository;
+import com.senthalan.contextizer.repo.TagRepository;
 import com.senthalan.contextizer.repo.UserRepository;
 import com.senthalan.contextizer.util.MD5;
 import com.senthalan.contextizer.util.MNException;
+import com.senthalan.contextizer.util.MailGunSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,10 @@ public class MediaService {
     @Autowired
     UserRepository userRepository;
 
-    public String registerMedia(Media media) throws MNException {
+    @Autowired
+    TagRepository TagRepository;
+
+    public Media registerMedia(Media media) throws MNException {
         LOGGER.debug("Media Register request received with params : {}", media);
 
         if (!media.validateRegister()) {
@@ -45,6 +49,7 @@ public class MediaService {
 
 
         media.password = MD5.getMD5(media.password);
+        media.status = Media.MediaStatus.INITIAL;
         Media savedMedia = mediaRepository.save(media);
 
         if (savedMedia == null) {
@@ -52,8 +57,18 @@ public class MediaService {
         }
 
         LOGGER.debug("Media registration success  ", media);
-
-        return "Media registered successfully";
+        //24 hours non-expire token
+        String accessToken = authService.createJWT(savedMedia.id, media.contactPersonEmail, 1440);
+        try {
+            MailGunSender.SendSimpleMessage("senthalan18@gmail.com",
+                    "MyNews Media Registered",
+                    "Media Details: " + media.name
+                            + "\n\nAccess Token: " + accessToken
+                            + "\n\n\nPlease not that Access Token expired in 24 hours");
+        } catch (Exception e) {
+            LOGGER.error("Error while sending MailGun email", e);
+        }
+        return media;
     }
 
     public SignInMediaResp SignIn(Media media) throws MNException {
@@ -64,19 +79,24 @@ public class MediaService {
         if (!media.validateSignIn()) {
             throw new MNException(MNStatus.MISSING_REQUIRED_PARAMS);
         }
-        Media savedMedia = mediaRepository.findOneByContactPersonEmail(media.name);
+        Media savedMedia = mediaRepository.findOneByContactPersonEmail(media.contactPersonEmail);
         if (savedMedia == null) {
             throw new MNException(MNStatus.NO_SUCH_MEDIA);
         }
         if (!savedMedia.password.equals(MD5.getMD5(media.password))) {
             throw new MNException(MNStatus.WRONG_CREDENTIALS);
         }
-        //24 hours non-expire token
-        String accessToken = authService.createJWT(savedMedia.id, media.name, 1440);
-        signInMediaResp = new SignInMediaResp(accessToken, savedMedia.maskPassword());
+        if (savedMedia.status != Media.MediaStatus.INITIAL) {
+            //24 hours non-expire token
+            String accessToken = authService.createJWT(savedMedia.id, media.contactPersonEmail, 1440);
+            signInMediaResp = new SignInMediaResp(accessToken, savedMedia.maskPassword());
 
-        LOGGER.debug("Media SignIn response with success mediaId : {}", signInMediaResp.media.id);
-        return signInMediaResp;
+            LOGGER.debug("Media SignIn response with success mediaId : {}", signInMediaResp.media.id);
+            return signInMediaResp;
+        } else {
+            throw new MNException(MNStatus.MEDIA_NOT_APPROVED);
+        }
+
     }
 
 
@@ -89,13 +109,15 @@ public class MediaService {
         if (savedMedia == null) {
             throw new MNException(MNStatus.NO_SUCH_MEDIA);
         }
+        savedMedia.status =Media.MediaStatus.APPROVED;
+        mediaRepository.save(savedMedia);
+
         //24 hours non-expire token
-        String accessToken = authService.createJWT(savedMedia.id, media.name, 1440);
+        String accessToken = authService.createJWT(savedMedia.id, media.contactPersonEmail, 1440);
         signInMediaResp = new SignInMediaResp(accessToken, savedMedia.maskPassword());
 
         LOGGER.debug("Media refresh response with success mediaId : {}", signInMediaResp.media.id);
         return signInMediaResp;
-
     }
 
 
@@ -104,12 +126,12 @@ public class MediaService {
         if (savedUser == null) {
             throw new MNException(MNStatus.NO_SUCH_USER);
         }
-        List<Media> medias = mediaRepository.findAll();
-        for (Media me : medias){
-            if (savedUser.subscriptions.contains(me.id)){
-                me.subscribed=true;
-            }else {
-                me.subscribed=false;
+        List<Media> medias = mediaRepository.findApproved();
+        for (Media me : medias) {
+            if (savedUser.subscriptions.contains(me.id)) {
+                me.subscribed = true;
+            } else {
+                me.subscribed = false;
             }
         }
         medias.forEach(Media::maskDetails);
@@ -185,6 +207,33 @@ public class MediaService {
         if (!rssConfig.url.startsWith("http://") && !rssConfig.url.startsWith("https://")) {
             rssConfig.url = "http://".concat(rssConfig.url);
         }
+        if (!(Objects.equals("common", rssConfig.tag))) {
+            Tag t = new Tag(rssConfig.tag);
+            LOGGER.debug("Save new tag to tag collection: {}", t);
+            TagRepository.save(t);
+        }
         return rssConfig;
+
+
+    }
+
+    public String resendToken(Media media) throws MNException {
+        LOGGER.debug("Media access token request received with id: {}", media.id);
+        Media savedMedia = mediaRepository.findOneByContactPersonEmail(media.contactPersonEmail);
+        if (savedMedia == null) {
+            throw new MNException(MNStatus.NO_SUCH_MEDIA);
+        }
+        //24 hours non-expire token
+        String accessToken = authService.createJWT(savedMedia.id, media.contactPersonEmail, 1440);
+        try {
+            MailGunSender.SendSimpleMessage("senthalan18@gmail.com",
+                    "MyNews Media Registered",
+                    "Media Details: " + media.name
+                            + "\n\nAccess Token: " + accessToken
+                            + "\n\n\nPlease not that Access Token expired in 24 hours");
+        } catch (Exception e) {
+            LOGGER.error("Error while sending MailGun email", e);
+        }
+        return "token send to email";
     }
 }

@@ -19,7 +19,8 @@ public enum MNStatus {
     TOKEN_EXPIRED("E0498", "Access token expired"),
     TOKEN_ERROR("E0499", "Access token error"),
     UNAUTHORIZED("E0401", "Unauthorized request"),
-    ALREADY_LOGIN("E9999","already logged in");
+    ALREADY_LOGIN("E9999","already logged in"),
+    MEDIA_NOT_APPROVED("E9994","media not approved" );
 
     public final String statusCode;
     public final String statusDescription;

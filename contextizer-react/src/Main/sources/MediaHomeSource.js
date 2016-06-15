@@ -1,4 +1,4 @@
-import contextizerRequest from './../../contextizerRequest'
+import contextizerRequest from './../../contextizerMediaRequest'
 
 var MediaHomeSource = {
     getAllNewses: function (req) {

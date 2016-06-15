@@ -46,8 +46,6 @@ public class NewsService {
     MediaService mediaservice;
 
 
-
-
     public String publishNews(News news) throws MNException {
         LOGGER.debug("Media news publish request received with params : {}", news);
 
@@ -73,9 +71,9 @@ public class NewsService {
         }
         if (req.userId== null){
             if (req.mediaId != null && req.mediaId != "" && req.tag != null && req.tag != "") {
-                newses = newsWithTagRepository.findByMediaAndTags(req.mediaId, req.tag, new PageRequest(req.skip, req.limit, Sort.Direction.DESC, "createdTime"));
+                newses = newsWithTagRepository.findByMediaIdAndTags(req.mediaId, req.tag, new PageRequest(req.skip, req.limit, Sort.Direction.DESC, "createdTime"));
             } else if (req.mediaId != null && req.mediaId != "" ) {
-                newses = newsWithTagRepository.findByMedia(req.mediaId, new PageRequest(req.skip, req.limit, Sort.Direction.DESC, "createdTime"));
+                newses = newsWithTagRepository.findByMediaId(req.mediaId, new PageRequest(req.skip, req.limit, Sort.Direction.DESC, "createdTime"));
             } else if (req.tag != null && req.tag != "") {
                 newses = newsWithTagRepository.findByTags(req.tag, new PageRequest(req.skip, req.limit,Sort.Direction.DESC, "createdTime"));
             } else {
@@ -90,16 +88,16 @@ public class NewsService {
             List<String> reqMedia=new ArrayList<>();
             if(req.mediaId == null || req.mediaId == "" ) {
                 List<Media> medias=mediaservice.getAllMedia(user);
-                reqMedia= medias.stream().filter(media -> media.subscribed).map(media -> media.name).collect(Collectors.toList());
+                reqMedia= medias.stream().filter(media -> media.subscribed).map(media -> media.id).collect(Collectors.toList());
             }
             else{
                 reqMedia.add(req.mediaId);
             }
             LOGGER.debug("News get with updated params : {}", reqMedia + "   "+req.tag);
             if (req.tag != null && req.tag != "") {
-                newses = newsWithTagRepository.findByMediaInAndTags(reqMedia, req.tag, new PageRequest(req.skip, req.limit, Sort.Direction.DESC, "createdTime"));
+                newses = newsWithTagRepository.findByMediaIdInAndTags(reqMedia, req.tag, new PageRequest(req.skip, req.limit, Sort.Direction.DESC, "createdTime"));
             } else {
-                newses = newsWithTagRepository.findByMediaLike(reqMedia, new PageRequest(req.skip, req.limit, Sort.Direction.DESC, "createdTime"));
+                newses = newsWithTagRepository.findByMediaIdIn(reqMedia, new PageRequest(req.skip, req.limit, Sort.Direction.DESC, "createdTime"));
             }
         }
 
@@ -110,12 +108,9 @@ public class NewsService {
             throw new MNException(MNStatus.NO_ENTRY_FOUND);
         }
 
-        return newses;
-    }
+        newses.forEach(news -> news.calculateSeen(req.userId));
 
-    public List<Tag> getTags() {
-        LOGGER.debug("Get all tags");
-        return TagRepository.findAll();
+        return newses;
     }
 
     public Page<News> getAll() {
@@ -153,5 +148,28 @@ public class NewsService {
         relatedNewsResponse.relatedNews=sortedNews;
 
         return relatedNewsResponse;
+    }
+
+    public boolean findNewsByLink(String link) {
+        News newsFromDB=newsWithTagRepository.findByLink(link);
+        if (newsFromDB==null){
+            newsFromDB=newsRepository.findByLink(link);
+            if (newsFromDB==null){
+                return false;
+            }
+        }
+        LOGGER.debug("same news found "+link);
+        return true;
+    }
+
+    public void addTag(String category) {
+        LOGGER.debug("Save new tag to tag collection: {}", category);
+        Tag t=new Tag(category);
+        TagRepository.save(t);
+    }
+
+    public List<Tag> getTags() {
+        LOGGER.debug("Get all tags");
+        return TagRepository.findAll();
     }
 }

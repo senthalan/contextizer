@@ -1,4 +1,4 @@
-import contextizerRequest from './../../contextizerRequest'
+import contextizerRequest from './../../contextizerUserRequest'
 
 var UserSource = {
     login: function (user) {

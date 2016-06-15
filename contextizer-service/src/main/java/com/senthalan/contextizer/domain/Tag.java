@@ -16,6 +16,14 @@ public class Tag {
     @Indexed(unique = true, sparse = true)
     public String name;
 
+    public Tag(String tag) {
+        this.name=tag;
+    }
+
+    public Tag(){
+
+    }
+
     @Override
     public String toString() {
         return "Tag{" +

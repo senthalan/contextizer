@@ -388,6 +388,7 @@ if __name__ == '__main__':
     worldDB=client.contextizer_dataset.world
     businessDB=client.contextizer_dataset.business
     localDB=client.contextizer_dataset.local
+    sportsDB=client.contextizer_dataset.sports
 
     #newsWithTagDB.remove()
     #tagDB.remove()
@@ -414,7 +415,7 @@ if __name__ == '__main__':
 
             tags=tagger(record["description"])
 
-            genTopics={'world':0,'business': 0, 'technology': 0, 'local' :0}
+            genTopics={'world':0,'business': 0, 'technology': 0, 'local' :0,'sports' :0}
             keyword=[]
             try:
                 record["tags"]
@@ -453,6 +454,14 @@ if __name__ == '__main__':
                             localDB.insert({"name":t})
                         except pymongo.errors.DuplicateKeyError:
                             continue
+                elif tag=="sports":
+                    for genTag in tags:
+                        t=unicode(genTag)
+                        keyword.append(t)
+                        try:
+                            sportsDB.insert({"name":t})
+                        except pymongo.errors.DuplicateKeyError:
+                            continue
             except (KeyError,IndexError):
                 print "tag is not available"
                 for genTag in tags:
@@ -466,6 +475,8 @@ if __name__ == '__main__':
                         genTopics['technology']+=1
                     if localDB.find({"name":t}).count()>0:
                         genTopics['local']+=1
+                    if sportsDB.find({"name":t}).count()>0:
+                        genTopics['sports']+=1
 
                 tag=max(genTopics, key=genTopics.get)
                 if genTopics[tag]==0:
@@ -476,7 +487,10 @@ if __name__ == '__main__':
             #     print "its a mistake";
 
             print "news publish "+record["description"]
-            newsWithTagDB.insert({"media":record["media"],"description":record["description"],"text":record["text"],"link":record["link"],"tags":tag,"keywords" : keyword,"views" :record["views"], "createdTime": record["createdTime"]})
+            try:
+                newsWithTagDB.insert({"media":record["media"],"mediaId":record["mediaId"],"description":record["description"],"text":record["text"],"link":record["link"],"tags":tag,"keywords" : keyword,"views" :record["views"], "createdTime": record["createdTime"]})
+            except pymongo.errors.DuplicateKeyError:
+                continue
 
     client.close()
 

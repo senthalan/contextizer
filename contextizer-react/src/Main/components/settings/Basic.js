@@ -17,7 +17,6 @@ class Basic extends Component {
             editDetails: false,
             editConfirmOpen: false,
             error: {
-                amount: '',
                 url: '',
                 contact: '',
                 phone: ''
@@ -29,7 +28,6 @@ class Basic extends Component {
     editDetails() {
         this.state.editDetails = !this.state.editDetails;
         this.state.error = {
-            amount: '',
             url: '',
             contact: '',
             phone: ''
@@ -40,16 +38,10 @@ class Basic extends Component {
     editConfirmOpen() {
         var mediaUpdate = {
             id: this.props.media.id,
-            amountPerMonth: this.refs.amount.getValue(),
             webUrl: this.refs.url.getValue(),
             contactPersonName: this.refs.contact.getValue(),
             contactPersonPhone: this.refs.phone.getValue()
         };
-        if (!mediaUpdate.amountPerMonth) {
-            this.state.error.amount = 'Subscription amount is required'
-        } else {
-            this.state.error.amount = ''
-        }
         if (!mediaUpdate.webUrl) {
             this.state.error.url = 'Media website URL is required'
         } else {

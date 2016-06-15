@@ -3,7 +3,7 @@ import MediaUserSource from './../sources/MediaUserSource'
 
 class MediaUserActions {
 
-    constructor(){
+    constructor() {
         this.generateActions('logout', 'resetUser');
     }
 
@@ -11,7 +11,7 @@ class MediaUserActions {
         MediaUserSource.login(media)
             .then(this.loginSuccess)
             .catch(this.loginFailed);
-        return 1;
+        return media;
     }
 
     loginSuccess(loginResp) {
@@ -19,7 +19,7 @@ class MediaUserActions {
     }
 
     loginFailed(errorMessage) {
-       return errorMessage;
+        return errorMessage;
     }
 
 
@@ -27,7 +27,7 @@ class MediaUserActions {
         MediaUserSource.refresh(media)
             .then(this.refreshSuccess)
             .catch(this.refreshFailed);
-        return 1;
+        return media;
     }
 
     refreshSuccess(loginResp) {
@@ -38,6 +38,24 @@ class MediaUserActions {
         return errorMessage;
     }
 
+    submitRegister(media) {
+        MediaUserSource.submitRegister(media)
+            .then(this.submitRegisterSuccess)
+            .catch(this.submitRegisterFailed);
+        return media;
+    }
+
+    submitRegisterSuccess(loginResp) {
+        return loginResp;
+    }
+
+    submitRegisterFailed(errorMessage) {
+        return errorMessage;
+    }
+
+    resendToken(media){
+        MediaUserSource.resendToken(media)
+    }
 
 }
 

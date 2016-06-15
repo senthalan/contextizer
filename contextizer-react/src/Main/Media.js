@@ -58,6 +58,7 @@ class Main extends Component {
                     (
                         <MediaLogin
                             mediaState={this.state.mediaState}
+                            mediaRegisterState={this.state.mediaRegisterState}
                         />
                     )
                 }

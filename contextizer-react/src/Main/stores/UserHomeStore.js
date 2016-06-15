@@ -12,7 +12,7 @@ class UserHomeStore {
         this.newses.content=[];
         this.medias = [];
         this.relatedNewsRes={"newsId":1};
-        this.tags = ['local', 'world', 'technology'];
+        this.tags = [];
 
         this.newsState = NetworkState.init();
         this.mediaState = NetworkState.init();
@@ -26,7 +26,9 @@ class UserHomeStore {
             getAllMedia: UserHomeActions.GET_ALL_MEDIA,
             getAllMediaSuccess: UserHomeActions.GET_ALL_MEDIA_SUCCESS,
             clickMe: UserHomeActions.CLICK_ME,
-            getRelatedNews:UserHomeActions.GET_RELATED_NEWS
+            getRelatedNews:UserHomeActions.GET_RELATED_NEWS,
+            getAllTags:UserHomeActions.GET_ALL_TAGS,
+            getAllTagsSuccess:UserHomeActions.GET_ALL_TAGS_SUCCESS
         });
     }
 
@@ -68,7 +70,15 @@ class UserHomeStore {
     getRelatedNews(relatedNews){
         this.relatedNewsState.succeed();
         this.relatedNewsRes=relatedNews;
-        console.log("related news got from database");
+        console.log("related news got from database",relatedNews);
+    }
+
+    getAllTags(){
+
+    }
+
+    getAllTagsSuccess(tags){
+        this.tags=tags;
     }
 }
 

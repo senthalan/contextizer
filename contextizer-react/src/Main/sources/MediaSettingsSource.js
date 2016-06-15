@@ -1,4 +1,4 @@
-import contextizerRequest from './../../contextizerRequest'
+import contextizerRequest from './../../contextizerMediaRequest'
 
 var MediaSettingsSource = {
     updateBasic: function (media) {

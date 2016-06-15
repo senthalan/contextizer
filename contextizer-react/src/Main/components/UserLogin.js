@@ -50,7 +50,7 @@ class UserLogin extends Component {
             this.state.error.name = '';
             this.state.registerOkay = true;
         }
-        if (!this.refs.password.getValue() ) {
+        if (!this.refs.password.getValue()) {
             this.state.error.password = 'Please enter password';
             this.state.registerOkay = false;
         } else {
@@ -64,7 +64,7 @@ class UserLogin extends Component {
             this.state.error.passConform = '';
             this.state.registerOkay = true;
         }
-        if (!(this.refs.passConform.getValue()==this.refs.password.getValue())) {
+        if (!(this.refs.passConform.getValue() == this.refs.password.getValue())) {
             this.state.error.password = 'Password not matched';
             this.state.error.passwConform = 'Password not matched';
             this.state.registerOkay = false;
@@ -78,7 +78,7 @@ class UserLogin extends Component {
             password: this.refs.password.getValue()
         };
         this.forceUpdate();
-        if (this.state.registerOkay){
+        if (this.state.registerOkay) {
             UserAction.submitRegister(user);
             this.forceUpdate();
         }
@@ -108,12 +108,14 @@ class UserLogin extends Component {
                         (
                             <div>
                                 <TextField
+                                    id="userEmail"
                                     ref="userEmail"
                                     type="email"
                                     floatingLabelText="User email"/>
                                 <br/>
 
                                 <TextField
+                                    id="userPassword"
                                     ref="password"
                                     floatingLabelText="Password"
                                     type="password"/>
@@ -127,13 +129,15 @@ class UserLogin extends Component {
                                 )
                                 }
 
-                                    <div className="margin-top-40">
+                                <div className="margin-top-40">
                                     <RaisedButton label="Login"
+                                                  id="userLogin"
                                                   primary={true}
                                                   onClick={this.login.bind(this)}/>
-                                    </div>
+                                </div>
                                 <div className="margin-top-40">
                                     <RaisedButton
+                                        id="registerUser"
                                         label="Register User"
                                         onTouchTap={this.registerOpen.bind(this)}
                                     />
@@ -149,6 +153,7 @@ class UserLogin extends Component {
                     title="Register User"
                     open={this.state.registerOpen}
                     modal={false}
+                    autoScrollBodyContent={true}
                     onRequestClose={this.registerClose.bind(this)}
                 >
                     <div className="row">
@@ -166,17 +171,20 @@ class UserLogin extends Component {
                             <div className="col-md-12 text-center">
                                 <TextField
                                     floatingLabelText="User email"
+                                    id="email"
                                     ref="email"
                                     type="email"
                                     errorText={this.state.error.name}
                                 /><br/>
                                 <TextField
+                                    id="password"
                                     type="password"
                                     hintText="password"
                                     ref='password'
                                     errorText={this.state.error.password}
                                 /><br/>
                                 <TextField
+                                    id="passConform"
                                     type="password"
                                     hintText="Conform New password"
                                     ref='passConform'
@@ -191,23 +199,28 @@ class UserLogin extends Component {
                                     </div>
                                 )
                                 }
-                                    <div>
-                                        <FlatButton
-                                            label="Later"
-                                            secondary={true}
-                                            onTouchTap={this.registerClose.bind(this)}
-                                        />
-                                        <FlatButton
-                                            label="Register User"
-                                            primary={true}
-                                            keyboardFocused={true}
-                                            onTouchTap={this.registerUser.bind(this)}
-                                        />
-                                    </div>
+                                <div>
+                                    <FlatButton
+                                        id="later"
+                                        label="Later"
+                                        secondary={true}
+                                        onTouchTap={this.registerClose.bind(this)}
+                                    />
+                                    <FlatButton
+                                        id="registerSubmit"
+                                        label="Register User"
+                                        primary={true}
+                                        keyboardFocused={true}
+                                        onTouchTap={this.registerUser.bind(this)}
+                                    />
+                                </div>
                             </div>
-                            )}
+                        )}
                     </div>
                 </Dialog>
+                <div className="col-md-8 col-md-offset-2 modal-footer margin-top-40">
+                    <label id="copyright">all rights received</label>
+                </div>
             </div>
 
         )

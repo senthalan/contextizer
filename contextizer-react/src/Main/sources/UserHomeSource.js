@@ -1,4 +1,4 @@
-import contextizerRequest from './../../contextizerRequest'
+import contextizerRequest from './../../contextizerUserRequest'
 
 var UserHomeSource = {
     getAllNewses: function (req) {
@@ -9,6 +9,9 @@ var UserHomeSource = {
     },
     clickMe: function(req){
         return contextizerRequest.post('/news/click' , req)
+    },
+    getAllTags: function(){
+        return contextizerRequest.get('/news/tags')
     }
 };
 

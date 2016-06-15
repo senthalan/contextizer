@@ -6,6 +6,7 @@ import com.senthalan.contextizer.util.ISODateTimeSerializer;
 import org.joda.time.DateTime;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.HashSet;
@@ -19,8 +20,10 @@ public class News {
     @Id
     public String id;
     public String media;
+    public String mediaId;
     public String text;
     public String description;
+    @Indexed(unique = true)
     public String link;
     public Set<String> tags;
 
@@ -37,12 +40,21 @@ public class News {
     }
 
 
-    public News( String name, String title, String description, String link, HashSet<String> strings) {
+    public News( String name,String mediaId, String title, String description, String link, HashSet<String> strings) {
         this.media=name;
+        this.mediaId=mediaId;
         this.text=title;
         this.description=description;
         this.link=link;
         this.tags=strings;
+    }
+
+    public News(String name,String mediaId, String title, String description, String link) {
+        this.media=name;
+        this.mediaId=mediaId;
+        this.text=title;
+        this.description=description;
+        this.link=link;
     }
 
     @Override

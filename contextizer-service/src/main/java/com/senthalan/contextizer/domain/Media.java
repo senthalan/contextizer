@@ -29,10 +29,15 @@ public class Media {
     public List<String> tags = new ArrayList();
     public List<RssConfig> rssConfig = new ArrayList();
     public boolean subscribed;
+    public MediaStatus status;
 
 //    todo: how?
     public String language;
 
+
+    public Media(){
+
+    }
 
     @Override
     public String toString() {
@@ -52,13 +57,11 @@ public class Media {
 
     public boolean validateRegister() {
         return name != null && !name.trim().isEmpty() &&
-                contactPersonName != null && !contactPersonName.trim().isEmpty() &&
-                contactPersonPhone != null && !contactPersonPhone.trim().isEmpty() &&
                 contactPersonEmail != null && !contactPersonEmail.trim().isEmpty();
     }
 
     public boolean validateSignIn() {
-        return name != null && !name.isEmpty() &&
+        return contactPersonEmail != null && !contactPersonEmail.isEmpty() &&
                 password != null && !password.isEmpty();
     }
 

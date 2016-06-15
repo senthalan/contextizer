@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
-       xmlns="http://www.springframework.org/schema/beans" xmlns:task="http://www.springframework.org/schema/task"
+       xmlns="http://www.springframework.org/schema/beans"
+       xmlns:task="http://www.springframework.org/schema/task"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
         http://www.springframework.org/schema/context
@@ -42,7 +43,6 @@
     <!--<task:scheduled-tasks>-->
         <!--<task:scheduled ref="rssRunner" method="run" fixed-delay="${rss.poll.interval}" />-->
     <!--</task:scheduled-tasks>-->
-
 
     <import resource="contextizer-server-rest-context.xml"/>
 
