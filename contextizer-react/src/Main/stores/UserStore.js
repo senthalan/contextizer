@@ -57,6 +57,12 @@ class UserStore {
     loginFailed(errorMessage) {
         this.user = {};
         this.isLoggedIn = false;
+        if (errorMessage=="Empty results from database"){
+            errorMessage="So such user";
+        }
+        if (errorMessage=="One or more required parameters are missing"){
+            errorMessage="Please fill fields";
+        }
         this.userState.fail(errorMessage);
     }
 
@@ -118,6 +124,9 @@ class UserStore {
     submitRegisterFailed(errorMessage) {
         this.user = {};
         this.isLoggedIn = false;
+        if (errorMessage=="User email is not available"){
+            errorMessage="You have already registered ...."
+        }
         this.userRegisterState.fail(errorMessage);
     }
 

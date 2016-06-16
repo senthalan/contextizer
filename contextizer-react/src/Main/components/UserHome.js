@@ -6,8 +6,8 @@ import {Card,
 import {Checkbox} from 'material-ui';
 
 import ContentSetting from '../../../node_modules/material-ui/lib/svg-icons/av/playlist-add';
-import NewsFirst from '../../../node_modules/material-ui/lib/svg-icons/navigation/first-page';
-import NewsLast from '../../../node_modules/material-ui/lib/svg-icons/navigation/last-page'
+import NewsFirst from '../../../node_modules/material-ui/lib/svg-icons/navigation/arrow-back';
+import NewsLast from '../../../node_modules/material-ui/lib/svg-icons/navigation/arrow-forward'
 import NewsNext from '../../../node_modules/material-ui/lib/svg-icons/navigation/chevron-right';
 import NewsBack from '../../../node_modules/material-ui/lib/svg-icons/navigation/chevron-left';
 
@@ -16,6 +16,7 @@ import UserHomeActions from './../actions/UserHomeActions';
 import UserActions from './../actions/UserActions';
 
 var moment = require('moment');
+var scrollTo = require("scroll-to")
 
 String.prototype.toProperCase = function () {
     return this.charAt(0).toUpperCase() + this.substr(1);
@@ -32,6 +33,7 @@ class UserHome extends Component {
             selectedMedia: "",
             selectedTag: "",
             logoutOpen: false,
+            WelcomeOpen: false,
             subscribeOpen: false,
             settingOpen: false
         };
@@ -43,9 +45,24 @@ class UserHome extends Component {
         setTimeout(UserHomeActions.getAllNewses.bind(this, {userId: this.props.user.id}), 0);
         setTimeout(UserHomeActions.getAllTags.bind(this), 0);
 
+        if (this.props.user.status == "INITIAL") {
+            console.log("its here ");
+            this.WelcomeOpen();
+        }
+
+    }
+
+    WelcomeOpen() {
+        this.setState({WelcomeOpen: true});
+    }
+
+
+    WelcomeClose() {
+        this.setState({WelcomeOpen: false});
     }
 
     settingOpen() {
+        this.WelcomeClose();
         this.setState({settingOpen: true});
     }
 
@@ -80,14 +97,6 @@ class UserHome extends Component {
 
     subscribeClose() {
         this.setState({subscribeOpen: false});
-    }
-
-    componentWillUnmount() {
-        clearInterval(this.pollInterval)
-    }
-
-    poll() {
-
     }
 
 
@@ -158,6 +167,11 @@ class UserHome extends Component {
                 "skip": this.skip
             };
             UserHomeActions.getAllNewses(req);
+            console.log("scroll");
+            scrollTo(0, 0, {
+                ease: 'out-bounce',
+                duration: 15
+            });
         }
     }
 
@@ -171,6 +185,11 @@ class UserHome extends Component {
                 "skip": this.skip
             };
             UserHomeActions.getAllNewses(req);
+            console.log("scroll");
+            scrollTo(0, 0, {
+                ease: 'out-bounce',
+                duration: 15
+            });
         }
     }
 
@@ -184,6 +203,11 @@ class UserHome extends Component {
                 "skip": this.skip
             };
             UserHomeActions.getAllNewses(req);
+            console.log("scroll");
+            scrollTo(0, 0, {
+                ease: 'out-bounce',
+                duration: 15
+            });
         }
     }
 
@@ -197,6 +221,11 @@ class UserHome extends Component {
                 "skip": this.skip
             };
             UserHomeActions.getAllNewses(req);
+            console.log("scroll");
+            scrollTo(0, 0, {
+                ease: 'out-bounce',
+                duration: 15
+            });
         }
     }
 
@@ -229,6 +258,24 @@ class UserHome extends Component {
                     Are you sure want to logout ?
                 </Dialog>
 
+                <Dialog
+                    title="Welcome to contextizer"
+                    actions={[
+                                      <FlatButton
+                                        id="openSub"
+                                        label="subscribe Media"
+                                        primary={true}
+                                        onTouchTap={this.subscribeOpen.bind(this)}
+                                      />
+                                    ]}
+                    modal={true}
+                    open={this.state.WelcomeOpen}
+                    onRequestClose={this.WelcomeClose.bind(this)}
+                >
+                    Welcome to contextizer...<br/>
+                    Start with subscribing media
+                </Dialog>
+
 
                 <Dialog
                     title="subscribe Details"
@@ -252,7 +299,7 @@ class UserHome extends Component {
                                 />
                             ]}
                 >
-                    subscribe details
+                    Available media
 
                     <div className="col-md-12">
                         {this.props.medias.map((media) => {
@@ -269,7 +316,8 @@ class UserHome extends Component {
                 <div className="container-fluid">
                     <div className="row">
                         <div className="media-select">
-                            <DropDownMenu id="mediaDropDown" value={this.state.selectedMedia} onChange={this.handleChange.bind(this)}>
+                            <DropDownMenu id="mediaDropDown" value={this.state.selectedMedia}
+                                          onChange={this.handleChange.bind(this)}>
                                 <MenuItem id="1" value={""} primaryText="."/>
                                 <MenuItem id="1" value={""} primaryText="All News"/>
                                 {this.props.medias.map((media) => {
@@ -283,7 +331,8 @@ class UserHome extends Component {
                         </div>
 
                         <div className="tag-select">
-                            <DropDownMenu id="tagDropDown" value={this.state.selectedTag} onChange={this.sortNews.bind(this)}>
+                            <DropDownMenu id="tagDropDown" value={this.state.selectedTag}
+                                          onChange={this.sortNews.bind(this)}>
                                 <MenuItem id="1" value={""} primaryText="."/>
                                 <MenuItem id="1" value={""} primaryText="All Topics"/>
                                 {this.props.tags.map((tag) => {
@@ -307,8 +356,9 @@ class UserHome extends Component {
                                 return (
                                     <div>
                                         <Card
-                                            className={ news.seen ? 'col-md-8 col-md-offset-2 margin-top-20 news-card-done' :'col-md-8 col-md-offset-2 margin-top-20 '}>
-                                            <a id={news.id} href={news.link} target="new" onClick={this.clickMe.bind(this, news.id)}>
+                                            className={ (news.seen || this.props.seen.indexOf(news.id) >-1)? 'col-md-8 col-md-offset-2 margin-top-20 news-card-done' :'col-md-8 col-md-offset-2 margin-top-20 '}>
+                                            <a id={news.id} href={news.link} target="new"
+                                               onClick={this.clickMe.bind(this, news.id)}>
                                                 <div>
                                                     <div className="col-md-12 margin-top-10 news-text">
                                                         <h4>
@@ -344,14 +394,11 @@ class UserHome extends Component {
                                                             <div className="col-md-3  related-news">
                                                                 <a id={"relate"+news.id} href={rnews.link} target="new">
                                                                     <Card>
-                                                                        <div className="col-md-12 margin-top-10 news-text">
-                                                                            <h4>
-                                                                                {rnews.text} - {rnews.media}
-                                                                            </h4>
-                                                                        </div>
-                                                                        <div
-                                                                            className="col-md-12 margin-top-10 news-description-related">
-                                                                            {rnews.description}
+                                                                        <div className="col-md-12">
+                                                                            <h5>{rnews.text} - {rnews.media}</h5>
+                                                                            <p className="news-description-related">
+                                                                                {rnews.description}
+                                                                            </p>
                                                                         </div>
                                                                     </Card>
                                                                 </a>
@@ -399,13 +446,23 @@ class UserHome extends Component {
                     (
                         <div className="col-md-8 col-md-offset-2 page-number">
 
+                            <NewsFirst onTouchTap={this.newsFirst.bind(this)}></NewsFirst>
+                            &nbsp;&nbsp;
+                            <NewsBack onTouchTap={this.newsBackward.bind(this)}></NewsBack>
+                            &nbsp; &nbsp;&nbsp;
+                            <label> {this.props.newses.number + 1} of {this.props.newses.totalPages} </label>
+                            &nbsp;&nbsp;&nbsp;
+                            <NewsNext onTouchTap={this.newsForward.bind(this)}></NewsNext>
+                            &nbsp;&nbsp;
+                            <NewsLast onTouchTap={this.newsLast.bind(this)}></NewsLast>
+
                         </div>
                     )
                     }
 
 
                     <div className="col-md-8 col-md-offset-2 modal-footer margin-top-40">
-                        <label id="userName">loggedin</label>
+                        <label id="userName">logged in as {this.props.user.email}</label>
                     </div>
                 </div>
             </div>

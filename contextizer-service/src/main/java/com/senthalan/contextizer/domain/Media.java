@@ -84,6 +84,7 @@ public class Media {
         this.contactPersonEmail = media.contactPersonEmail;
         this.webUrl = media.webUrl;
         this.facebookUrl = media.facebookUrl;
+        this.status=media.status;
         return this;
     }
 
@@ -100,7 +101,7 @@ public class Media {
     }
 
     public enum MediaStatus {
-        INITIAL, APPROVED, SUSPENDED
+        INITIAL, APPROVED, REGISTERED
     }
 
     public static class RssConfig {

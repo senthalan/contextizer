@@ -170,6 +170,7 @@ public class MediaService {
         if (!Objects.equals(oldMedia.password, MD5.getMD5(media.password))) {
             throw new MNException(MNStatus.WRONG_CREDENTIALS);
         }
+        media.status= Media.MediaStatus.REGISTERED;
         oldMedia.updateBasicConfig(media);
         mediaRepository.save(oldMedia);
 

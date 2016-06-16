@@ -139,9 +139,12 @@ public class NewsService {
 
         sameNews.stream().filter(temp -> (!sortedId.contains(temp.id) && sortedNews.size() < 4)).forEach(temp -> {
             sortedId.add(temp.id);
+            if (temp.description.length() > 200) {
+                temp.description = temp.description.substring(0, 200);
+            }
+            temp.description=temp.description + "......";
             sortedNews.add(temp);
         });
-//        sameNews = sameNews.stream().distinct().collect(Collectors.toList());
 
         RelatedNewsResponse relatedNewsResponse=new RelatedNewsResponse();
         relatedNewsResponse.newsId=req.newsId;

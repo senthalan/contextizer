@@ -36,7 +36,7 @@ class UserHomeActions {
     clickMe(req){
         UserHomeSource.clickMe(req)
             .then(this.getRelatedNews);
-        return 1;
+        return req;
     }
 
     getRelatedNews(relatedNews){

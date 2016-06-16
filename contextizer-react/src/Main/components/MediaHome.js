@@ -7,15 +7,17 @@ import {Card, CardHeader, CardTitle, CardText,CardActions,
     Dialog, FlatButton, Snackbar} from 'material-ui';
 
 import ContentAdd from '../../../node_modules/material-ui/lib/svg-icons/content/add';
-//import NewsFirst from '../../../node_modules/material-ui/lib/svg-icons/av/fast-rewind';
-//import NewsLast from '../../../node_modules/material-ui/lib/svg-icons/av/fast-forward'
-//import NewsNext from '../../../node_modules/material-ui/lib/svg-icons/av/skip-next';
-//import NewsBack from '../../../node_modules/material-ui/lib/svg-icons/av/skip-previous';
+import NewsFirst from '../../../node_modules/material-ui/lib/svg-icons/navigation/arrow-back';
+import NewsLast from '../../../node_modules/material-ui/lib/svg-icons/navigation/arrow-forward'
+import NewsNext from '../../../node_modules/material-ui/lib/svg-icons/navigation/chevron-right';
+import NewsBack from '../../../node_modules/material-ui/lib/svg-icons/navigation/chevron-left';
+
 
 import MediaHomeActions from './../actions/MediaHomeActions';
 import MediaUserActions from './../actions/MediaUserActions';
 
 var moment = require('moment');
+var scrollTo=require("scroll-to")
 
 
 class MediaHome extends Component {
@@ -54,18 +56,18 @@ class MediaHome extends Component {
 
     publishClose() {
         this.setState({publishOpen: false});
+        this.state.error.text = '';
+        this.state.error.link = '';
+        this.state.error.description = '';
     }
 
 
     componentDidMount() {
         var req = {mediaId: this.props.media.id};
         setTimeout(MediaHomeActions.getAllNewses.bind(this, req), 0);
-        clearInterval(this.pollInterval);
-        this.pollInterval = setInterval(MediaHomeActions.getAllNewses.bind(this, {mediaId: this.props.media.id}), 15000);
     }
 
     componentWillUnmount() {
-        clearInterval(this.pollInterval);
     }
 
     addTag(tag, event) {
@@ -113,12 +115,14 @@ class MediaHome extends Component {
         if (this.skip > 0) {
             this.skip = this.skip - 1;
             var req = {
-                "userId": this.props.user.id,
-                "mediaId": this.state.selectedMedia,
-                "tag": this.state.selectedTag,
+                "mediaId": this.props.media.id,
                 "skip": this.skip
             };
-            UserHomeActions.getAllNewses(req);
+            MediaHomeActions.getAllNewses(req);
+            scrollTo(0, 0, {
+                ease: 'out-bounce',
+                duration: 15
+            });
         }
     }
 
@@ -126,10 +130,14 @@ class MediaHome extends Component {
         if (this.skip < this.props.newses.totalPages - 1) {
             this.skip = this.skip + 1;
             var req = {
-                "mediaId": this.props.media.name,
+                "mediaId": this.props.media.id,
                 "skip": this.skip
             };
             MediaHomeActions.getAllNewses(req);
+            scrollTo(0, 0, {
+                ease: 'out-bounce',
+                duration: 15
+            });
         }
     }
 
@@ -137,10 +145,14 @@ class MediaHome extends Component {
         if (this.skip > 0) {
             this.skip = 0;
             var req = {
-                "mediaId": this.props.media.name,
+                "mediaId": this.props.media.id,
                 "skip": this.skip
             };
             MediaHomeActions.getAllNewses(req);
+            scrollTo(0, 0, {
+                ease: 'out-bounce',
+                duration: 15
+            });
         }
     }
 
@@ -148,10 +160,14 @@ class MediaHome extends Component {
         if (this.skip < this.props.newses.totalPages - 1) {
             this.skip = this.props.newses.totalPages - 1;
             var req = {
-                "mediaId": this.props.media.name,
+                "mediaId": this.props.media.id,
                 "skip": this.skip
             };
             MediaHomeActions.getAllNewses(req);
+            scrollTo(0, 0, {
+                ease: 'out-bounce',
+                duration: 15
+            });
         }
     }
 
@@ -187,7 +203,7 @@ class MediaHome extends Component {
                                 onTouchTap={this.publishNews.bind(this)}
                               />
                             ]}
-                            modal={true}
+                            modal={false}
                             open={this.state.publishOpen}
                             onRequestClose={this.publishClose.bind(this)}
                         >
@@ -293,8 +309,14 @@ class MediaHome extends Component {
                     {!this.props.newsState.isFailed() &&
                     (
                         <div className="col-md-8 col-md-offset-2 page-number">
-
-
+                            <NewsFirst onTouchTap={this.newsFirst.bind(this)}></NewsFirst>
+                            &nbsp;&nbsp;
+                            <NewsBack onTouchTap={this.newsBackward.bind(this)}></NewsBack>
+                            &nbsp;&nbsp;&nbsp;<label> {this.props.newses.number + 1}&nbsp;
+                            of &nbsp;{this.props.newses.totalPages} </label>&nbsp;&nbsp;&nbsp;
+                            <NewsNext onTouchTap={this.newsForward.bind(this)}></NewsNext>
+                            &nbsp;&nbsp;
+                            <NewsLast onTouchTap={this.newsLast.bind(this)}></NewsLast>
                         </div>
                     )
                     }

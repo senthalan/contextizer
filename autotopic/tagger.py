@@ -411,6 +411,8 @@ if __name__ == '__main__':
             record["text"]=lxml.html.fromstring(record["text"]).text_content()
 
 
+            record["description"] = (record["description"]).replace('appeared first on Sri Lanka News - Newsfirst | News1st | newsfirst.lk | Breaking','')
+
             tags=[]
 
             tags=tagger(record["description"])
@@ -481,12 +483,13 @@ if __name__ == '__main__':
                 tag=max(genTopics, key=genTopics.get)
                 if genTopics[tag]==0:
                     print "tag cant be generated from our system"
-                    tag="other"
+                    tag="common"
 
             # else:
             #     print "its a mistake";
 
             print "news publish "+record["description"]
+            print tag
             try:
                 newsWithTagDB.insert({"media":record["media"],"mediaId":record["mediaId"],"description":record["description"],"text":record["text"],"link":record["link"],"tags":tag,"keywords" : keyword,"views" :record["views"], "createdTime": record["createdTime"]})
             except pymongo.errors.DuplicateKeyError:

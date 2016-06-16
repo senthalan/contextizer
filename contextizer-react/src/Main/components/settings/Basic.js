@@ -38,12 +38,13 @@ class Basic extends Component {
     editConfirmOpen() {
         var mediaUpdate = {
             id: this.props.media.id,
+            contactPersonEmail: this.props.media.contactPersonEmail,
             webUrl: this.refs.url.getValue(),
             contactPersonName: this.refs.contact.getValue(),
             contactPersonPhone: this.refs.phone.getValue()
         };
-        if (!mediaUpdate.webUrl) {
-            this.state.error.url = 'Media website URL is required'
+        if (!this.validateWebUrl(mediaUpdate.webUrl)) {
+            this.state.error.url = 'Media website URL is invalid'
         } else {
             this.state.error.url = ''
         }
@@ -52,23 +53,33 @@ class Basic extends Component {
         } else {
             this.state.error.contact = ''
         }
-        if (!mediaUpdate.contactPersonPhone) {
-            this.state.error.phone = 'Contact person tp No. is required'
+        if (!this.validatePhone(mediaUpdate.contactPersonPhone )) {
+            this.state.error.phone = 'Not a valid phone number'
         } else {
             this.state.error.phone = ''
         }
 
-        if (mediaUpdate.amountPerMonth &&
-            mediaUpdate.webUrl &&
+        if (this.state.error.url == '' &&
             mediaUpdate.contactPersonName &&
-            mediaUpdate.contactPersonPhone) {
+            this.state.error.phone == '') {
             this.state.mediaUpdate = mediaUpdate;
             this.state.changePasswordOpen = true;
         }
-
         this.forceUpdate();
 
     }
+
+    validatePhone(inputtxt)
+    {
+        var phoneno = /^\+?([0-9]{2})\)?[-. ]?([0-9]{4})[-. ]?([0-9]{4})$/;
+        return (inputtxt.match(phoneno));
+    }
+
+    validateWebUrl(url){
+        var re = /^(http[s]?:\/\/){0,1}(www\.){0,1}[a-zA-Z0-9\.\-]+\.[a-zA-Z]{2,5}[\.]{0,1}/;
+        return re.test(url);
+    }
+
 
 
     editConfirmClose() {
@@ -97,37 +108,42 @@ class Basic extends Component {
             <div>
                 <Card className="col-md-12 padding-20">
                     <h4>BASIC DETAILS</h4>
+                    {this.props.media.status == "APPROVED" && (
+                            <div>
+                                Please fill the basic details
+                            </div>
+                        )}
                     <TextField
                         disabled={true}
                         defaultValue={this.props.media.name}
                         floatingLabelText="Media Name"
-                        />
+                    />
                     <TextField
                         disabled={true}
                         defaultValue={this.props.media.contactPersonEmail}
                         floatingLabelText="Media email"
-                        />
+                    />
                     <TextField
                         defaultValue={this.props.media.webUrl}
                         floatingLabelText="Media Website URL"
                         disabled={!this.state.editDetails}
                         ref="url"
                         errorText={this.state.error.url}
-                        /><br/>
+                    /><br/>
                     <TextField
                         defaultValue={this.props.media.contactPersonName}
                         floatingLabelText="Contact Person Name"
                         disabled={!this.state.editDetails}
                         ref="contact"
                         errorText={this.state.error.contact}
-                        />
+                    />
                     <TextField
                         defaultValue={this.props.media.contactPersonPhone}
                         floatingLabelText="Contact Person TP. No."
                         disabled={!this.state.editDetails}
                         ref="phone"
                         errorText={this.state.error.phone}
-                        />
+                    />
                     {this.state.editDetails ?
                         (
                             <span>
@@ -139,7 +155,7 @@ class Basic extends Component {
                                             iconClassName="fa fa-light fa-close" tooltip="Cancel"
                                             tooltipPosition="top-right"
                                             onClick={this.editDetails.bind(this)}
-                                            />
+                                        />
                                     </span>
                         )
                         :
@@ -148,7 +164,7 @@ class Basic extends Component {
                                 iconClassName="fa fa-light fa-pencil" tooltip="Edit Details"
                                 tooltipPosition="top-right"
                                 onClick={this.editDetails.bind(this)}
-                                />
+                            />
                         )
                     }
                 </Card>
@@ -159,34 +175,30 @@ class Basic extends Component {
                     modal={false}
                     open={this.state.changePasswordOpen}
                     onRequestClose={this.editConfirmClose.bind(this)}
-                    >
+                >
                     <div className="row">
                         <div className="col-md-12 text-center">
                             <TextField
                                 disabled={true}
-                                defaultValue={this.state.mediaUpdate.amountPerMonth}
-                                floatingLabelText="Subscription Amount per month"
-                                />
-                            <TextField
-                                disabled={true}
                                 defaultValue={this.state.mediaUpdate.webUrl}
                                 floatingLabelText="Media Web URL"
-                                />
+                            />
                             <TextField
                                 disabled={true}
                                 defaultValue={this.state.mediaUpdate.contactPersonName}
                                 floatingLabelText="Contact person name"
-                                />
+                            />
                             <TextField
                                 disabled={true}
                                 defaultValue={this.state.mediaUpdate.contactPersonPhone}
                                 floatingLabelText="Contact person tp No."
-                                />
+                            /><br/>
+                            <hr/>
                             <TextField
                                 type="password"
                                 hintText="Please type your Media password"
                                 ref='password'
-                                />
+                            />
                         </div>
 
                         <div className="col-md-12 text-center">
@@ -216,13 +228,13 @@ class Basic extends Component {
                                         label="Later"
                                         secondary={true}
                                         onTouchTap={this.editConfirmClose.bind(this)}
-                                        />
+                                    />
                                     <FlatButton
                                         label="Update"
                                         primary={true}
                                         keyboardFocused={true}
                                         onTouchTap={this.updateBasic.bind(this)}
-                                        />
+                                    />
                                 </div>
                             )
                             }

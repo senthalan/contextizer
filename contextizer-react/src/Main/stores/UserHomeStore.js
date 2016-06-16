@@ -18,6 +18,9 @@ class UserHomeStore {
         this.mediaState = NetworkState.init();
         this.relatedNewsState=NetworkState.init();
 
+
+        this.seen = [];
+
         this.bindListeners({
             resetHome: UserHomeActions.RESET_HOME,
             getAllNewses: UserHomeActions.GET_ALL_NEWSES,
@@ -45,11 +48,15 @@ class UserHomeStore {
     getAllNewsesSuccess(newses) {
         this.newsState.succeed();
         this.newses = newses;
+        this.seen = [];
         setTimeout(UserHomeActions.resetHome, 3000);
     }
 
     getAllNewsesFailed(errorMessage) {
         this.newses.content=[];
+        if (errorMessage=="Empty results from database"){
+            errorMessage="No News found....."
+        }
         this.newsState.fail(errorMessage);
     }
 
@@ -63,8 +70,8 @@ class UserHomeStore {
         this.medias = medias;
     }
 
-    clickMe(newsId) {
-
+    clickMe(req) {
+        this.seen.push(req.newsId);
     }
 
     getRelatedNews(relatedNews){

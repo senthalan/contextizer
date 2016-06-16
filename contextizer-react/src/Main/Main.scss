@@ -76,9 +76,10 @@ label{
 }
 
 .related-news {
-  max-height: 295px;
+  max-height: 300px;
+  min-height:300px;
   margin-top: 10px;
-  margin-bottom: 10px;
+  margin-bottom:1px;
 }
 
 .news-text{
@@ -99,7 +100,12 @@ label{
 }
 
 .news-description-related{
-  max-height: 150px;
+  font-size: 12px;
+}
+
+.news-title-related{
+  max-height: 300px;
+  min-height: 300px;
 }
 
 .media-select{

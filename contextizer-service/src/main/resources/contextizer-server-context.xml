@@ -38,11 +38,11 @@
     </bean>
 
 
-    <!--<bean id="rssRunner" class="com.senthalan.contextizer.rss.RssRunner"/>-->
+    <bean id="rssRunner" class="com.senthalan.contextizer.rss.RssRunner"/>
 
-    <!--<task:scheduled-tasks>-->
-        <!--<task:scheduled ref="rssRunner" method="run" fixed-delay="${rss.poll.interval}" />-->
-    <!--</task:scheduled-tasks>-->
+    <task:scheduled-tasks>
+        <task:scheduled ref="rssRunner" method="run" fixed-delay="${rss.poll.interval}" />
+    </task:scheduled-tasks>
 
     <import resource="contextizer-server-rest-context.xml"/>
 

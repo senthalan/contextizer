@@ -34,6 +34,9 @@ class UserApplicationContainer extends Component {
                         },
                         newsState: function(props){
                             return UserHomeStore.getState().newsState;
+                        },
+                        seen:function(props){
+                            return UserHomeStore.getState().seen;
                         }
                 }}>
                 <UserHome></UserHome>

@@ -63,6 +63,12 @@ class MediaUserStore {
             localStorage.removeItem("media");
         }
         this.isLoggedIn = false;
+        if (errorMessage=="Empty results from database"){
+            errorMessage="So such user";
+        }
+        if (errorMessage=="One or more required parameters are missing"){
+            errorMessage="Please fill fields";
+        }
         this.mediaState.fail(errorMessage);
     }
 
@@ -106,6 +112,9 @@ class MediaUserStore {
         this.isLoggedIn = false;
         localStorage.removeItem("Authorization");
         localStorage.removeItem("media");
+        if (errorMessage=="Media name is not available"){
+            errorMessage="You have already registered ...."
+        }
         this.mediaRegisterState.fail(errorMessage);
     }
 

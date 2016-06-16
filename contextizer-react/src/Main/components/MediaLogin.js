@@ -8,6 +8,9 @@ import { browserHistory } from 'react-router';
 import { FloatingActionButton, Avatar, FontIcon,
     TextField, Checkbox, RaisedButton, IconButton, Dialog, FlatButton} from 'material-ui'
 
+var isValidEmail = require('is-valid-email');
+
+
 class MediaLogin extends Component {
 
     constructor(props) {
@@ -60,6 +63,11 @@ class MediaLogin extends Component {
 
     registerClose() {
         this.setState({registerOpen: false});
+        this.state.registerOkay = false;
+        this.state.error.email = '';
+        this.state.error.name = '';
+        this.state.error.password = '';
+        this.state.error.passConform = '';
     }
 
     registerUser() {
@@ -70,35 +78,52 @@ class MediaLogin extends Component {
             this.state.error.email = '';
             this.state.registerOkay = true;
         }
-        if (!this.refs.name.getValue()) {
-            this.state.error.name = 'Please enter name';
-            this.state.registerOkay = false;
-        } else {
-            this.state.error.name = '';
-            this.state.registerOkay = true;
+        if (this.state.registerOkay){
+            if (!isValidEmail(this.refs.email.getValue())){
+                this.state.error.email = 'Not a valid email';
+                this.state.registerOkay = false;
+            } else {
+                this.state.error.name = '';
+                this.state.registerOkay = true;
+            }
         }
-        if (!this.refs.password.getValue()) {
-            this.state.error.password = 'Please enter password';
-            this.state.registerOkay = false;
-        } else {
-            this.state.error.password = '';
-            this.state.registerOkay = true;
+        if (this.state.registerOkay){
+            if (!this.refs.name.getValue()) {
+                this.state.error.name = 'Please enter name';
+                this.state.registerOkay = false;
+            } else {
+                this.state.error.name = '';
+                this.state.registerOkay = true;
+            }
         }
-        if (!this.refs.passConform.getValue()) {
-            this.state.error.passConform = 'Please re-enter password';
-            this.state.registerOkay = false;
-        } else {
-            this.state.error.passConform = '';
-            this.state.registerOkay = true;
+        if (this.state.registerOkay){
+            if (!this.refs.password.getValue()) {
+                this.state.error.password = 'Please enter password';
+                this.state.registerOkay = false;
+            } else {
+                this.state.error.password = '';
+                this.state.registerOkay = true;
+            }
         }
-        if (!(this.refs.passConform.getValue() == this.refs.password.getValue())) {
-            this.state.error.password = 'Password not matched';
-            this.state.error.passwConform = 'Password not matched';
-            this.state.registerOkay = false;
-        } else {
-            this.state.error.password = '';
-            this.state.error.passConform = '';
-            this.state.registerOkay = true;
+        if (this.state.registerOkay){
+            if (!this.refs.passConform.getValue()) {
+                this.state.error.passConform = 'Please re-enter password';
+                this.state.registerOkay = false;
+            } else {
+                this.state.error.passConform = '';
+                this.state.registerOkay = true;
+            }
+        }
+        if (this.state.registerOkay){
+            if (!(this.refs.passConform.getValue() == this.refs.password.getValue())) {
+                this.state.error.password = 'Password not matched';
+                this.state.error.passwConform = 'Password not matched';
+                this.state.registerOkay = false;
+            } else {
+                this.state.error.password = '';
+                this.state.error.passConform = '';
+                this.state.registerOkay = true;
+            }
         }
         var media = {
             name: this.refs.name.getValue(),

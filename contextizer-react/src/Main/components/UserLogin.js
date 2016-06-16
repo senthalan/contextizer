@@ -9,6 +9,9 @@ import { browserHistory } from 'react-router';
 import { Card, FloatingActionButton, Avatar, FontIcon,
     TextField, Checkbox, RaisedButton, IconButton, Dialog, FlatButton} from 'material-ui'
 
+var isValidEmail = require('is-valid-email');
+
+
 class UserLogin extends Component {
 
     constructor(props) {
@@ -40,44 +43,65 @@ class UserLogin extends Component {
 
     registerClose() {
         this.setState({registerOpen: false});
+        this.state.registerOkay = false;
+        this.state.error.name = '';
+        this.state.error.password = '';
+        this.state.error.passConform = '';
     }
 
     registerUser() {
         if (!this.refs.email.getValue()) {
-            this.state.error.name = 'Please enter name';
+            this.state.error.name = 'Please enter email';
             this.state.registerOkay = false;
         } else {
             this.state.error.name = '';
             this.state.registerOkay = true;
         }
-        if (!this.refs.password.getValue()) {
-            this.state.error.password = 'Please enter password';
-            this.state.registerOkay = false;
-        } else {
-            this.state.error.password = '';
-            this.state.registerOkay = true;
+        if (this.state.registerOkay){
+            if (!isValidEmail(this.refs.email.getValue())){
+                this.state.error.name = 'Not a valid email';
+                this.state.registerOkay = false;
+            } else {
+                this.state.error.name = '';
+                this.state.registerOkay = true;
+            }
         }
-        if (!this.refs.passConform.getValue()) {
-            this.state.error.passConform = 'Please re-enter password';
-            this.state.registerOkay = false;
-        } else {
-            this.state.error.passConform = '';
-            this.state.registerOkay = true;
+        if (this.state.registerOkay){
+            if (!this.refs.password.getValue()) {
+                this.state.error.password = 'Please enter password';
+                this.state.registerOkay = false;
+            } else {
+                this.state.error.password = '';
+                this.state.registerOkay = true;
+            }
         }
-        if (!(this.refs.passConform.getValue() == this.refs.password.getValue())) {
-            this.state.error.password = 'Password not matched';
-            this.state.error.passwConform = 'Password not matched';
-            this.state.registerOkay = false;
-        } else {
-            this.state.error.password = '';
-            this.state.error.passConform = '';
-            this.state.registerOkay = true;
+        if (this.state.registerOkay){
+            if (!this.refs.passConform.getValue()) {
+                this.state.error.passConform = 'Please re-enter password';
+                this.state.registerOkay = false;
+            } else {
+                this.state.error.passConform = '';
+                this.state.registerOkay = true;
+            }
         }
+        if (this.state.registerOkay){
+            if (!(this.refs.passConform.getValue() == this.refs.password.getValue())) {
+                this.state.error.password = 'Password not matched';
+                this.state.error.passwConform = 'Password not matched';
+                this.state.registerOkay = false;
+            } else {
+                this.state.error.password = '';
+                this.state.error.passConform = '';
+                this.state.registerOkay = true;
+            }
+        }
+
         var user = {
             email: this.refs.email.getValue(),
             password: this.refs.password.getValue()
         };
         this.forceUpdate();
+        console.log(this.state.registerOkay);
         if (this.state.registerOkay) {
             UserAction.submitRegister(user);
             this.forceUpdate();

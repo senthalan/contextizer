@@ -38,17 +38,17 @@ class Main extends Component {
             <div>
                 {this.state.isLoggedIn ?
                     (
-                        <Tabs
-                            initialSelectedIndex={0}>
+                        <Tabs>
                             <Tab
                                 icon={<FontIcon className="fa fa-home fa-2x"></FontIcon>}
                                 label={this.state.media.name}
-                                selected={true}>
+                                selected={this.state.media.status=="APPROVED"}>
                                 <MediaHomeContainer/>
                             </Tab>
                             <Tab
                                 icon={<FontIcon className="fa fa-cogs fa-2x"></FontIcon>}
-                                label="SETTINGS">
+                                label="SETTINGS"
+                                selected={this.state.media.status=="REGISTERED"}>
                                 <MediaSettingsContainer/>
                             </Tab>
                         </Tabs>

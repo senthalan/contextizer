@@ -124,8 +124,12 @@ class RssConfig extends Component {
         return (
             <div>
                 <Card className="col-md-12 padding-20">
-
+                    <h5>
+                        If your media have RSS field for tags add here.<br/>
+                        If your media only a common RSS field please put "common" in tag and add the url.</h5>
+                    <hr/>
                     <table className="table table-striped">
+
                         <thead>
                         <tr>
                             <th>TAG</th>
@@ -138,7 +142,7 @@ class RssConfig extends Component {
                                     iconClassName="fa fa-light fa-pencil" tooltip="Edit Rss configurations"
                                     tooltipPosition="top-left"
                                     onClick={this.editDetails.bind(this)}
-                                    />
+                                />
                                 <IconButton iconClassName="fa fa-light fa-plus" tooltip="Add New Rss URL"
                                             tooltipPosition="top-left"
                                             onClick={this.update.bind(this, 'new')}/>
@@ -153,7 +157,7 @@ class RssConfig extends Component {
                                     <IconButton
                                         iconClassName="fa fa-light fa-close"
                                         onClick={this.editDetails.bind(this)}
-                                        />
+                                    />
                                 </span>
                                 }
                             </th>
@@ -168,19 +172,19 @@ class RssConfig extends Component {
                                         <TextField
                                             disabled={!this.state.editDetails}
                                             ref={'tag-'+ index}
-                                            />
+                                        />
                                     </td>
                                     <td>
                                         <TextField
                                             disabled={!this.state.editDetails}
                                             ref={'url-'+ index}
-                                            />
+                                        />
                                     </td>
                                     <td>
                                         <TextField
                                             disabled={!this.state.editDetails}
                                             ref={'pollMinutes-'+ index}
-                                            />
+                                        />
                                     </td>
                                     <td>
                                         {this.state.editDetails &&
@@ -203,7 +207,7 @@ class RssConfig extends Component {
                     modal={false}
                     open={this.state.rssConfirmOpen}
                     onRequestClose={this.rssConfirmClose.bind(this)}
-                    >
+                >
                     <div className="row">
                         <div className="col-md-12 text-center">
 
@@ -211,7 +215,7 @@ class RssConfig extends Component {
                                 type="password"
                                 floatingLabelText="Please type your Media password"
                                 ref='edit-password'
-                                />
+                            />
                         </div>
 
                         <div className="col-md-12 text-center">
@@ -241,13 +245,13 @@ class RssConfig extends Component {
                                         label="Later"
                                         secondary={true}
                                         onTouchTap={this.rssConfirmClose.bind(this)}
-                                        />
+                                    />
                                     <FlatButton
                                         label="Update"
                                         primary={true}
                                         keyboardFocused={true}
                                         onTouchTap={this.rssUpdate.bind(this)}
-                                        />
+                                    />
                                 </div>
                             )
                             }
@@ -260,7 +264,7 @@ class RssConfig extends Component {
                     modal={false}
                     open={this.state.rssNewOpen}
                     onRequestClose={this.rssNewClose.bind(this)}
-                    >
+                >
                     <div className="row">
                         <div className="col-md-12 text-center">
 
@@ -269,23 +273,23 @@ class RssConfig extends Component {
                                 fullWidth={true}
                                 floatingLabelText="RSS feed Url"
                                 ref='new-url'
-                                />
+                            />
 
                             <TextField
                                 floatingLabelText="RSS tag"
                                 ref='new-tag'
-                                />
+                            />
 
                             <TextField
                                 floatingLabelText="RSS polling time in minutes"
                                 ref='new-pollMinutes'
-                                /> <br/>
+                            /> <br/>
 
                             <TextField
                                 type="password"
                                 floatingLabelText="Please type your Media password"
                                 ref='new-password'
-                                />
+                            />
                         </div>
 
                         <div className="col-md-12 text-center">
@@ -315,13 +319,13 @@ class RssConfig extends Component {
                                         label="Later"
                                         secondary={true}
                                         onTouchTap={this.rssNewClose.bind(this)}
-                                        />
+                                    />
                                     <FlatButton
                                         label="Add RSS"
                                         primary={true}
                                         keyboardFocused={true}
                                         onTouchTap={this.rssUpdate.bind(this, 'new')}
-                                        />
+                                    />
                                 </div>
                             )
                             }
