@@ -57,6 +57,10 @@ public class NewsService {
             throw new MNException(MNStatus.NO_SUCH_MEDIA);
         }
 
+        if(findNewsByLink(news.link)){
+            throw new MNException(MNStatus.ALREADY_PUBLISHED);
+        }
+
         news.views=new HashSet<>();
 
         newsRepository.save(news);

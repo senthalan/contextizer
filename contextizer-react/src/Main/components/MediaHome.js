@@ -17,7 +17,7 @@ import MediaHomeActions from './../actions/MediaHomeActions';
 import MediaUserActions from './../actions/MediaUserActions';
 
 var moment = require('moment');
-var scrollTo=require("scroll-to")
+var scrollTo = require("scroll-to")
 
 
 class MediaHome extends Component {
@@ -105,10 +105,19 @@ class MediaHome extends Component {
             this.state.error.link = ''
         }
         this.forceUpdate();
-        if (news.text && news.description && news.link) {
+        if (news.text && news.description && news.link && this.validateWebUrl(news.link)) {
             MediaHomeActions.publishNews(news);
             this.publishClose();
         }
+        else {
+            this.state.error.link = 'News short link is invalid'
+        }
+        this.forceUpdate();
+    }
+
+    validateWebUrl(url) {
+        var re = /^(http[s]?:\/\/){0,1}(www\.){0,1}[a-zA-Z0-9\.\-]+\.[a-zA-Z]{2,5}[\.]{0,1}/;
+        return re.test(url);
     }
 
     newsBackward() {
@@ -237,37 +246,46 @@ class MediaHome extends Component {
 
                         </Dialog>
 
-                        {this.props.publishState.isLoading() &&
-                        (
-                            <div className="text-center">
-                                <div className="la-ball-scale-multiple la-3x">
-                                    <div></div>
-                                    <div></div>
-                                    <div></div>
+                        <div className="col-md-12 margin-top-10">
+                            {this.props.publishState.isLoading() &&
+                            (
+                                <div className="text-center">
+                                    <div className="la-ball-scale-multiple la-3x">
+                                        <div></div>
+                                        <div></div>
+                                        <div></div>
+                                    </div>
+                                    {this.props.publishState.message}
                                 </div>
-                                {this.props.publishState.message}
-                            </div>
-                        )
-                        }
-                        {this.props.publishState.isFailed() &&
-                        (
-                            <div className="alert alert-danger">
-                                {this.props.publishState.message}
-                            </div>
-                        )
-                        }
+                            )
+                            }
+                            {this.props.publishState.isFailed() &&
+                            (
+                                <div className="alert alert-danger">
+                                    {this.props.publishState.message}
+                                </div>
+                            )
+                            }
 
-                        {this.props.newsState.isLoading() &&
-                        (
-                            <div className="text-center">
-                                <div className="la-ball-scale-multiple la-3x loading-absolute">
-                                    <div></div>
-                                    <div></div>
-                                    <div></div>
+                            {this.props.newsState.isLoading() &&
+                            (
+                                <div className="text-center">
+                                    <div className="la-ball-scale-multiple la-3x loading-absolute">
+                                        <div></div>
+                                        <div></div>
+                                        <div></div>
+                                    </div>
                                 </div>
-                            </div>
-                        )
-                        }
+                            )
+                            }
+                            {this.props.newsState.isFailed() &&
+                            (
+                                <div className="alert alert-danger">
+                                    {this.props.newsState.message}
+                                </div>
+                            )
+                            }
+                        </div>
                         {this.props.newses.content.map((news) => {
                                 return (
                                     <Card className="col-md-8 col-md-offset-2 margin-top-20">

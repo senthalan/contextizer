@@ -37,7 +37,7 @@ class Settings extends Component {
                 <div className="row">
 
                     <div className="col-md-8 margin-top-20">
-                       <Basic {...this.props}/>
+                        <Basic {...this.props}/>
                     </div>
 
                     <div className="col-md-4 margin-top-20">
@@ -47,6 +47,7 @@ class Settings extends Component {
                             <div className="col-md-12">
 
                                 <RaisedButton
+                                    id="logout"
                                     label="log out"
                                     secondary={true}
                                     onTouchTap={this.logoutOpen.bind(this)}>
@@ -57,14 +58,13 @@ class Settings extends Component {
                                 <ChangePassword {...this.props}/>
 
 
-
                             </div>
                         </Card>
                     </div>
 
 
                     <div className="col-md-12 margin-top-20">
-                            <RssConfig {...this.props}/>
+                        <RssConfig {...this.props}/>
                     </div>
 
                 </div>
@@ -79,6 +79,7 @@ class Settings extends Component {
                                 onTouchTap={this.logoutClose.bind(this)}
                               />,
                               <FlatButton
+                                id="logoutConform"
                                 label="Logout"
                                 primary={true}
                                 keyboardFocused={true}
@@ -96,19 +97,19 @@ class Settings extends Component {
                     open={this.props.passwordState.isSuccess()}
                     message={this.props.passwordState.message}
                     autoHideDuration={3000}
-                    />
+                />
 
                 <Snackbar
                     open={this.props.basicState.isSuccess()}
                     message={this.props.basicState.message}
                     autoHideDuration={3000}
-                    />
+                />
 
                 <Snackbar
                     open={this.props.rssState.isSuccess()}
                     message={this.props.rssState.message}
                     autoHideDuration={3000}
-                    />
+                />
             </div>
         )
     }

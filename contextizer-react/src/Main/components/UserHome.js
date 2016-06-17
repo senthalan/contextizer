@@ -318,8 +318,8 @@ class UserHome extends Component {
                         <div className="media-select">
                             <DropDownMenu id="mediaDropDown" value={this.state.selectedMedia}
                                           onChange={this.handleChange.bind(this)}>
-                                <MenuItem id="1" value={""} primaryText="."/>
-                                <MenuItem id="1" value={""} primaryText="All News"/>
+                                <MenuItem id="news1" value={""} primaryText="."/>
+                                <MenuItem id="news1" value={""} primaryText="All News"/>
                                 {this.props.medias.map((media) => {
                                     return (
                                         <MenuItem id={media.id} value={media.id} primaryText={media.name.toProperCase()}
@@ -333,8 +333,8 @@ class UserHome extends Component {
                         <div className="tag-select">
                             <DropDownMenu id="tagDropDown" value={this.state.selectedTag}
                                           onChange={this.sortNews.bind(this)}>
-                                <MenuItem id="1" value={""} primaryText="."/>
-                                <MenuItem id="1" value={""} primaryText="All Topics"/>
+                                <MenuItem id="tag1" value={""} primaryText="."/>
+                                <MenuItem id="tagt1" value={""} primaryText="All Topics"/>
                                 {this.props.tags.map((tag) => {
                                     return (
                                         <MenuItem id={tag.name} value={tag.name} primaryText={tag.name}/>

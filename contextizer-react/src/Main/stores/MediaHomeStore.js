@@ -42,6 +42,9 @@ class MediaHomeStore {
     }
     getAllNewsesFailed(errorMessage){
         this.newses.content=[];
+        if (errorMessage=="Empty results from database"){
+            errorMessage="Now news published yet... "
+        }
         this.newsState.fail(errorMessage);
     }
 
@@ -51,8 +54,9 @@ class MediaHomeStore {
 
     publishNewsSuccess(success){
         this.publishState.succeed('News published successfully');
-        setTimeout(MediaHomeActions.resetHome, 3000);
-        setTimeout(MediaHomeActions.getAllNewses.bind(this, MediaUserStore.getState().media.name), 0);
+        var req = {mediaId: MediaUserStore.getState().media.id};
+        setTimeout(MediaHomeActions.getAllNewses.bind(this, req), 300);
+        //setTimeout(MediaHomeActions.resetHome,3000);
     }
 
     publishNewsFailed(errorMessage){

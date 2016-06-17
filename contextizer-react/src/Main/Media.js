@@ -40,12 +40,14 @@ class Main extends Component {
                     (
                         <Tabs>
                             <Tab
+                                id="mediaName"
                                 icon={<FontIcon className="fa fa-home fa-2x"></FontIcon>}
                                 label={this.state.media.name}
                                 selected={this.state.media.status=="APPROVED"}>
                                 <MediaHomeContainer/>
                             </Tab>
                             <Tab
+                                id="setting"
                                 icon={<FontIcon className="fa fa-cogs fa-2x"></FontIcon>}
                                 label="SETTINGS"
                                 selected={this.state.media.status=="REGISTERED"}>

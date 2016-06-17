@@ -193,15 +193,18 @@ class MediaLogin extends Component {
                             <div>
                                 <TextField
                                     ref="mediaEmail"
+                                    id="mediaEmail"
                                     floatingLabelText="Media email"/>
                                 <br/>
 
                                 <TextField
                                     ref="loginpassword"
+                                    id="loginpassword"
                                     floatingLabelText="Password" type="password"/>
                                 <br/>
                                 <div className="margin-top-40">
                                     <RaisedButton label="Login"
+                                                  id="mediaLogin"
                                                   primary={true}
                                                   onClick={this.login.bind(this)}/>
 
