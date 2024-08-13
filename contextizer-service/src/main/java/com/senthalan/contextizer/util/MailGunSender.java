@@ -18,7 +18,7 @@ public class MailGunSender {
         formData.add("subject", subject);
         formData.add("text", text);
 
-        HttpAuthenticationFeature feature = HttpAuthenticationFeature.universal("api", "key-749f695ea35f3bb6c21a9708c3a91b71");
+        HttpAuthenticationFeature feature = HttpAuthenticationFeature.universal("api", "<key>");
         return ClientBuilder.newClient()
                 .register(feature)
                 .target("https://api.mailgun.net/v3/sandbox03b42f5d4d3b4530a528b0aff53df274.mailgun.org/messages")
